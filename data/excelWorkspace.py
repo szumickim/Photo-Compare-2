@@ -143,6 +143,11 @@ def work_with_delete_excel(products_collection, folder_to_save):
         create_to_delete_excel(products_collection, excel_path)
 
 
+def backup_excel(products_collection, folder_to_save):
+    excel_path = f"{folder_to_save}/Backup{set_today_date('-')}.xlsx"
+    create_to_delete_excel(products_collection, excel_path)
+
+
 def create_to_delete_excel(products_collection, excel_path):
     to_delete_columns = [ToDeleteConst.PRODUCT_ID, ToDeleteConst.PHOTO_ID, ToDeleteConst.PHOTO_REFERENCE,
                          ToDeleteConst.HEIGHT, ToDeleteConst.WIDTH]
@@ -153,8 +158,8 @@ def create_to_delete_excel(products_collection, excel_path):
             if photo.delete_photo:
                 df_to_delete.loc[df_to_delete.shape[0]] = [getattr(product, "<ID>"), photo.name, photo.asset_type, photo.height, photo.width]
 
-    format_excel(df_to_delete, excel_path, TO_DELETE_FORMAT)
-    # df_to_delete.to_excel(excel_path, index=False)
+    # format_excel(df_to_delete, excel_path, TO_DELETE_FORMAT)
+    df_to_delete.to_excel(excel_path, index=False)
 
 
 def modify_to_delete_excel(products_collection, excel_path):

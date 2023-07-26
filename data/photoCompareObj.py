@@ -59,8 +59,9 @@ def main(entry_info: EntryInfo):
 
     # Inicjowanie zmiennej używanej do przycisków
     button_action = int(ButtonConst.NEXT)
+    backup_counter = 0
     while i < len(products_collection):
-
+        backup_counter += 1
         if i < 0:
             i = 0
 
@@ -75,13 +76,19 @@ def main(entry_info: EntryInfo):
 
             progres_bar.progress(int(i - first_row) / (len(products_collection) - first_row) * 100)
             progres_bar.change_counter_label_text(f'{int(i - first_row)}/{len(products_collection) - first_row}')
+
+
         elif entry_info.program_type == ALL_IMAGES:
             continue_program, button_action, i = show_all_images_loop(products_collection, entry_info, continue_program, i)
+
+            if backup_counter % 100 == 0:
+                backup_excel(products_collection, entry_info.photo_path)
 
         if button_action == int(ButtonConst.BACK):
             i -= entry_info.elements_on_screen
         elif button_action == int(ButtonConst.NEXT):
             i += entry_info.elements_on_screen
+
 
     if entry_info.program_type == COMPARE:
         add_column_to_excel(entry_info.excel_path, products_collection, first_row)
