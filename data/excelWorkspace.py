@@ -174,7 +174,7 @@ def modify_to_delete_excel(products_collection, excel_path):
     for product in products_collection:
         for photo in product.all_photos:
             if photo.delete_photo:
-                for column, element in enumerate([getattr(product, "<ID>"), photo.name, photo.asset_type, photo.height, photo.width], start=1):
+                for column, element in enumerate([product.product_id, photo.name, photo.asset_type, photo.height, photo.width], start=1):
                     sheet.cell(row=counter, column=column).value = element
 
                 counter += 1

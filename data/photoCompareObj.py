@@ -12,6 +12,7 @@ from clsPhotosPair import PhotosPair
 from showAllPhotos import show_all_photos
 from showCompareImages import show_image
 from excelWorkspace import *
+from dataFromStep import create_product_collection_from_step
 import progressBar
 
 LAST_COLUMN_IN_EXPORT: int = 40
@@ -35,11 +36,17 @@ SUMMARY_FORMAT: int = 2
 
 
 def main(entry_info: EntryInfo):
-    # Wczytywanie excela z informacjami o zdjęciach
-    df_export, first_row = read_export(entry_info.excel_path, entry_info.continue_work)
+    # # Wczytywanie excela z informacjami o zdjęciach
+    # df_export, first_row = read_export(entry_info.excel_path, entry_info.continue_work)
+    #
+    # # tworzenie obiektów 'products'
+    # products_collection = create_products_collection(df_export, entry_info)
 
-    # tworzenie obiektów 'products'
-    products_collection = create_products_collection(df_export, entry_info)
+    pim_id_list = ['PIM21310949','PIM21310950','PIM21386953','PIM21310948','PIM21310813','PIM21310814','PIM21310815','PRD_STK_6437955','PIM21310951','PIM21310947','PIM19579459','PIM19579461','PIM21310807','PIM21310808','PIM21310809','PIM21310810','PIM21310811','PIM21310812','PIM20963163','PIM20919802','PIM20919835','PIM20919836','PIM20919837','PIM20919838','PIM20919839','PIM20919849','PIM20919850','PIM20919855','PIM21310816']
+    photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
+    context = 'en-GL'
+    first_row = 0
+    products_collection = create_product_collection_from_step(pim_id_list, photo_reference_list, context)
 
     if entry_info.resize_photo:
         entry_info.photo_path = resize_photos(entry_info.photo_path)
@@ -110,7 +117,7 @@ def main(entry_info: EntryInfo):
 
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
-    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter)
+    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, True)
     if button_action == int(ButtonConst.CLOSE):
         continue_program = False
     elif button_action == int(ButtonConst.GO_TO):

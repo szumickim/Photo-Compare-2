@@ -48,7 +48,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
         # Nazwa produktu
         product_name = tk.Text(second_frame, height=0, width=25)
         product_name.grid(row=y_position, column=0, pady=1, padx=10)
-        product_name.insert(tk.END, f"{getattr(product, '<ID>')}")
+        product_name.insert(tk.END, product.product_id)
         product_name.config(state='disabled')
 
         for photo in product.all_photos:
@@ -65,7 +65,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
 
         for i, photo in enumerate(product.all_photos):
 
-            dict_key = f"{getattr(product, 'product_id')};{photo.name}" if data_form_step else f"{getattr(product, '<ID>')};{photo.name}"
+            dict_key =f"{product.product_id};{photo.name}"
 
             # tk.Label(second_frame, image=image_list[i + counter]).grid(row=y_position + 1, column=x_position, pady=1, padx=10)
 
@@ -125,7 +125,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
 
         for product in products_list:
             for photo in product.all_photos:
-                checkbnt = photos_names_dict.get(f"{getattr(product, '<ID>')};{photo.name}")
+                checkbnt = photos_names_dict.get(f"{product.product_id};{photo.name}")
                 if checkbnt.var.get():
                     photo.delete_photo = True
                     print('Item selected: {}'.format(checkbnt['text']))

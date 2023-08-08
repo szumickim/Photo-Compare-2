@@ -33,6 +33,7 @@ def get_assets(asset_id):
     else:
         return response
 
+
 def gather_data(assets_dict, photos_list, photo_reference):
     if assets_dict.get("references"):  # jeżeli jest więcej niż 1 zdjęcie
         for assets in assets_dict.get("references"):
@@ -48,6 +49,7 @@ def gather_data(assets_dict, photos_list, photo_reference):
         photos_list.append(photo_object)
     return photos_list
 
+
 def get_data_from_Step(pim_id, photo_reference_list, context):
     photos_list = []
     for photo_reference in photo_reference_list:
@@ -56,7 +58,8 @@ def get_data_from_Step(pim_id, photo_reference_list, context):
         gather_data(assets_dict, photos_list, photo_reference)
     return photos_list
 
-def create_product_collection_form_step(pim_id_list, photo_reference_list, context):
+
+def create_product_collection_from_step(pim_id_list, photo_reference_list, context):
     products_list = []
     for pim_id in pim_id_list:
         photos_list = get_data_from_Step(pim_id, photo_reference_list, context)
@@ -66,17 +69,14 @@ def create_product_collection_form_step(pim_id_list, photo_reference_list, conte
             product.all_photos.append(photo)
 
         products_list.append(product)
-
-    for prod in products_list:
-        for img in prod.all_photos:
-            img.asset_data.show()
+    return products_list
 
 
 if __name__ == "__main__":
     pim_id_list = ['PIM21310811', 'PRD_STK_6437955', 'PIM20963163']
     photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
     context = 'en-GL'
-    prod_collection = create_product_collection_form_step(pim_id_list, photo_reference_list, context)
+    prod_collection = create_product_collection_from_step(pim_id_list, photo_reference_list, context)
     pass
 
 
