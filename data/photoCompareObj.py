@@ -44,9 +44,6 @@ def main(entry_info: EntryInfo):
     if entry_info.resize_photo:
         entry_info.photo_path = resize_photos(entry_info.photo_path)
 
-    # Ustalanie wartości początkowej parametru do wcześniejszego wyłączenia programu
-    continue_program = True
-
     # Inicjowanie progressBaru
     if entry_info.program_type == COMPARE:
         progres_bar = progressBar.ClsProgress(tk.Toplevel())
@@ -57,11 +54,18 @@ def main(entry_info: EntryInfo):
     # Pozycja pierwszego produktu
     i = first_row
 
+    # Ustalanie wartości początkowej parametru do wcześniejszego wyłączenia programu
+    continue_program = True
+
     # Inicjowanie zmiennej używanej do przycisków
     button_action = int(ButtonConst.NEXT)
+
+    # Licznik backupu
     backup_counter = 0
+
     while i < len(products_collection):
         backup_counter += 1
+
         if i < 0:
             i = 0
 

@@ -1,5 +1,5 @@
 from clsPhoto import PhotoStep
-import clsProduct
+from clsProduct import ProductStep
 import requests
 from requests.auth import HTTPBasicAuth
 import json
@@ -47,18 +47,36 @@ def gather_data(assets_dict, photos_list, photo_reference):
         photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
         photos_list.append(photo_object)
     return photos_list
+
 def get_data_from_Step(pim_id, photo_reference_list, context):
     photos_list = []
     for photo_reference in photo_reference_list:
         assets_dict = get_asstets_id(pim_id, photo_reference, context)
         assets_dict = json.loads(assets_dict)
         gather_data(assets_dict, photos_list, photo_reference)
+    return photos_list
 
-    pass
+def create_product_collection_form_step(pim_id_list, photo_reference_list, context):
+    products_list = []
+    for pim_id in pim_id_list:
+        photos_list = get_data_from_Step(pim_id, photo_reference_list, context)
+        product = ProductStep(pim_id)
+
+        for photo in photos_list:
+            product.all_photos.append(photo)
+
+        products_list.append(product)
+
+    for prod in products_list:
+        for img in prod.all_photos:
+            img.asset_data.show()
+
+
 if __name__ == "__main__":
-    pim_id = 'PIM21310811'
+    pim_id_list = ['PIM21310811', 'PRD_STK_6437955', 'PIM20963163']
     photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
     context = 'en-GL'
-    get_data_from_Step(pim_id, photo_reference_list, context)
-
+    prod_collection = create_product_collection_form_step(pim_id_list, photo_reference_list, context)
     pass
+
+

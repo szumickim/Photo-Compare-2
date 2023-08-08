@@ -9,6 +9,7 @@ class Photo:
         self.delete_photo = False
         self.validated = False
         self.worse = False
+        self.asset_data = None
 
 class PhotoBasics:
     def __init__(self):

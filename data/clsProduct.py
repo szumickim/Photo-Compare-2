@@ -18,3 +18,15 @@ class Product:
             if photo.asset_type.find('Primary') != -1:
                 self.all_photos.remove(photo)
                 self.all_photos.insert(0, photo)
+
+class ProductBasics:
+    def __init__(self):
+        self.all_photos = []
+        self.similar_photos_list = []
+        self.photos_connection_type = ""
+        self.photos_pairs_list = []
+
+class ProductStep(ProductBasics):
+    def __init__(self, pim_id):
+        super().__init__()
+        self.product_id = pim_id
