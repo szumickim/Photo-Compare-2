@@ -70,13 +70,3 @@ def create_product_collection_from_step(pim_id_list, photo_reference_list, conte
 
         products_list.append(product)
     return products_list
-
-
-if __name__ == "__main__":
-    pim_id_list = ['PIM21310811', 'PRD_STK_6437955', 'PIM20963163']
-    photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
-    context = 'en-GL'
-    prod_collection = create_product_collection_from_step(pim_id_list, photo_reference_list, context)
-    pass
-
-

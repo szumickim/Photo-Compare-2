@@ -31,22 +31,29 @@ SIMILARITY_TYPE_COLUMN: str = "Similarity type"
 
 PRODUCTS_ON_SCREEN: int = 3
 
-TO_DELETE_FORMAT: int = 1
+SHOW_ALL_SUMMARY_FORMAT: int = 1
 SUMMARY_FORMAT: int = 2
 
 
 def main(entry_info: EntryInfo):
-    # # Wczytywanie excela z informacjami o zdjęciach
-    # df_export, first_row = read_export(entry_info.excel_path, entry_info.continue_work)
-    #
-    # # tworzenie obiektów 'products'
-    # products_collection = create_products_collection(df_export, entry_info)
 
-    pim_id_list = ['PIM21310949','PIM21310950','PIM21386953','PIM21310948','PIM21310813','PIM21310814','PIM21310815','PRD_STK_6437955','PIM21310951','PIM21310947','PIM19579459','PIM19579461','PIM21310807','PIM21310808','PIM21310809','PIM21310810','PIM21310811','PIM21310812','PIM20963163','PIM20919802','PIM20919835','PIM20919836','PIM20919837','PIM20919838','PIM20919839','PIM20919849','PIM20919850','PIM20919855','PIM21310816']
-    photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
-    context = 'en-GL'
-    first_row = 0
-    products_collection = create_product_collection_from_step(pim_id_list, photo_reference_list, context)
+    if entry_info.data_from_step:
+        pim_id_list = ['PIM21310949', 'PIM21310950', 'PIM21386953', 'PIM21310948', 'PIM21310813', 'PIM21310814',
+                       'PIM21310815', 'PRD_STK_6437955', 'PIM21310951', 'PIM21310947', 'PIM19579459', 'PIM19579461',
+                       'PIM21310807', 'PIM21310808', 'PIM21310809', 'PIM21310810', 'PIM21310811', 'PIM21310812',
+                       'PIM20963163', 'PIM20919802', 'PIM20919835', 'PIM20919836', 'PIM20919837', 'PIM20919838',
+                       'PIM20919839', 'PIM20919849', 'PIM20919850', 'PIM20919855', 'PIM21310816']
+        photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
+        context = 'en-GL'
+        first_row = 0
+        products_collection = create_product_collection_from_step(pim_id_list, photo_reference_list, context)
+
+    else:
+        # Wczytywanie excela z informacjami o zdjęciach
+        df_export, first_row = read_export(entry_info.excel_path, entry_info.continue_work)
+
+        # tworzenie obiektów 'products'
+        products_collection = create_products_collection(df_export, entry_info)
 
     if entry_info.resize_photo:
         entry_info.photo_path = resize_photos(entry_info.photo_path)
@@ -108,7 +115,7 @@ def main(entry_info: EntryInfo):
         progres_bar.kill_bar()
 
     elif entry_info.program_type == ALL_IMAGES:
-        work_with_delete_excel(products_collection, entry_info.photo_path)
+        work_with_show_all_summ_excel(products_collection, entry_info.photo_path)
 
     # Usuwanie tymczasowych, rozszerzonych zdjęć
     if entry_info.resize_photo:
@@ -117,7 +124,7 @@ def main(entry_info: EntryInfo):
 
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
-    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, True)
+    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info.data_from_step)
     if button_action == int(ButtonConst.CLOSE):
         continue_program = False
     elif button_action == int(ButtonConst.GO_TO):
@@ -323,6 +330,8 @@ if __name__ == "__main__":
     if_resize_photos = False
     live_preview = False
 
-    entry_info = EntryInfo(excel_path, photo_test_path, live_preview, continue_work, if_resize_photos, ALL_IMAGES)
+    # entry_info = EntryInfo(excel_path=excel_path, photo_path=photo_test_path, live_preview=live_preview, continue_work=continue_work,
+    #                      resize_photo=if_resize_photos, program_type=ALL_IMAGES, elements_in_show_all=3, data_from_step=True)
 
+    entry_info = EntryInfo(program_type=ALL_IMAGES, elements_in_show_all=3, data_from_step=True)
     main(entry_info)
