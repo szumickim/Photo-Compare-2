@@ -4,12 +4,10 @@ from PIL import Image, ImageTk
 from consts import ButtonConst
 from progressBar import ClsProgress
 from tkinter import messagebox
-
 global next_product_id
 
 
 def show_all_photos(products_list, photo_path, progress_counter: dict, data_form_step=False):
-
     IMAGE_WIDTH: int = 200
     IMAGE_HEIGHT: int = 200
 

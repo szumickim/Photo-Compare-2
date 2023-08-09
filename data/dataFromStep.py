@@ -5,6 +5,8 @@ from requests.auth import HTTPBasicAuth
 import json
 from PIL import Image
 import io
+import progressBar
+import tkinter as tk
 
 FIND_ID_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/products' # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
 GET_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/assets' # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
@@ -60,8 +62,12 @@ def get_data_from_Step(pim_id, photo_reference_list, context):
 
 
 def create_product_collection_from_step(pim_id_list, photo_reference_list, context):
+    progres_bar = progressBar.ClsProgress(tk.Toplevel())
+    progres_bar.add_counter()
     products_list = []
+    counter = 0
     for pim_id in pim_id_list:
+        progres_bar.progress(counter / len(pim_id_list) * 100)
         photos_list = get_data_from_Step(pim_id, photo_reference_list, context)
         product = ProductStep(pim_id)
 
@@ -69,4 +75,7 @@ def create_product_collection_from_step(pim_id_list, photo_reference_list, conte
             product.all_photos.append(photo)
 
         products_list.append(product)
+        counter += 1
+
+    progres_bar.kill_bar()
     return products_list

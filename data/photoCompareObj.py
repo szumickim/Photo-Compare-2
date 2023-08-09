@@ -95,7 +95,6 @@ def main(entry_info: EntryInfo):
             progres_bar.progress(int(i - first_row) / (len(products_collection) - first_row) * 100)
             progres_bar.change_counter_label_text(f'{int(i - first_row)}/{len(products_collection) - first_row}')
 
-
         elif entry_info.program_type == ALL_IMAGES:
             continue_program, button_action, i = show_all_images_loop(products_collection, entry_info, continue_program, i)
 
@@ -124,6 +123,7 @@ def main(entry_info: EntryInfo):
 
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
+
     button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info.data_from_step)
     if button_action == int(ButtonConst.CLOSE):
         continue_program = False
