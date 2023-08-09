@@ -142,8 +142,8 @@ def my_click():
     photo_path = photo_folder_path.cget('text')
     excel_path = excel_file_path.cget('text')
 
-    entry_info = EntryInfo(excel_path, photo_path, live_preview_var.get(), continue_work_var.get(),
-                         resize_photo_var.get(), program_type.get(), elements_in_show_all.get())
+    entry_info = EntryInfo(excel_path=excel_path, photo_path=photo_path, live_preview=live_preview_var.get(), continue_work=continue_work_var.get(),
+                         resize_photo=resize_photo_var.get(), program_type=program_type.get(), elements_in_show_all=elements_in_show_all.get(), data_from_step=True)
 
     photoCompareObj.main(entry_info)
 

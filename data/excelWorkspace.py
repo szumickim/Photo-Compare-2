@@ -21,7 +21,7 @@ SIMILARITY_TYPE_COLUMN: str = "Similarity type"
 
 PRODUCTS_ON_SCREEN: int = 3
 
-TO_DELETE_FORMAT: int = 1
+SHOW_ALL_SUMMARY_FORMAT: int = 1
 SUMMARY_FORMAT: int = 2
 
 def format_excel(final_df, file_name, format_type):
@@ -135,29 +135,33 @@ def add_column_to_excel(excel_path, products_collection, first_row):
     workbook.save(filename=excel_path)
 
 
-def work_with_delete_excel(products_collection, folder_to_save):
-    excel_path = f"{folder_to_save}/ImagesToDelete {set_today_date('-')}.xlsx"
+def work_with_show_all_summ_excel(products_collection, folder_to_save):
+    excel_path = f"ShowAllSummary {set_today_date('-')}.xlsx" if len(folder_to_save) == 0 else f"{folder_to_save}/ShowAllSummary {set_today_date('-')}.xlsx"
     if os.path.isfile(excel_path):
-        modify_to_delete_excel(products_collection, excel_path)
+        modify_show_all_summ_excel(products_collection, excel_path)
     else:
-        create_to_delete_excel(products_collection, excel_path)
+        create_show_all_summ_excel(products_collection, excel_path)
 
 
-def create_to_delete_excel(products_collection, excel_path):
-    to_delete_columns = [ToDeleteConst.PRODUCT_ID, ToDeleteConst.PHOTO_ID, ToDeleteConst.PHOTO_REFERENCE,
-                         ToDeleteConst.HEIGHT, ToDeleteConst.WIDTH]
-    df_to_delete = pd.DataFrame(columns=to_delete_columns)
+def backup_excel(products_collection, folder_to_save):
+    excel_path = f"{folder_to_save}/Backup{set_today_date('-')}.xlsx"
+    create_show_all_summ_excel(products_collection, excel_path)
+
+
+def create_show_all_summ_excel(products_collection, excel_path):
+    show_all_summ_columns = [ToDeleteConst.PRODUCT_ID, ToDeleteConst.PHOTO_ID, ToDeleteConst.PHOTO_REFERENCE,
+                             ToDeleteConst.HEIGHT, ToDeleteConst.WIDTH]
+    df_show_all_summ = pd.DataFrame(columns=show_all_summ_columns)
 
     for product in products_collection:
         for photo in product.all_photos:
             if photo.delete_photo:
-                df_to_delete.loc[df_to_delete.shape[0]] = [getattr(product, "<ID>"), photo.name, photo.asset_type, photo.height, photo.width]
+                df_show_all_summ.loc[df_show_all_summ.shape[0]] = [product.product_id, photo.name, photo.asset_type, photo.height, photo.width]
 
-    format_excel(df_to_delete, excel_path, TO_DELETE_FORMAT)
-    # df_to_delete.to_excel(excel_path, index=False)
+    df_show_all_summ.to_excel(excel_path, index=False)
 
 
-def modify_to_delete_excel(products_collection, excel_path):
+def modify_show_all_summ_excel(products_collection, excel_path):
     workbook = load_workbook(filename=excel_path)
     sheet = workbook.active
 
@@ -169,7 +173,7 @@ def modify_to_delete_excel(products_collection, excel_path):
     for product in products_collection:
         for photo in product.all_photos:
             if photo.delete_photo:
-                for column, element in enumerate([getattr(product, "<ID>"), photo.name, photo.asset_type, photo.height, photo.width], start=1):
+                for column, element in enumerate([product.product_id, photo.name, photo.asset_type, photo.height, photo.width], start=1):
                     sheet.cell(row=counter, column=column).value = element
 
                 counter += 1
