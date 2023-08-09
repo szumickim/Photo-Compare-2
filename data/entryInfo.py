@@ -1,6 +1,5 @@
 ALL_IMAGES: str = "Show all images"
 
-
 class EntryInfo:
     def __init__(self, program_type=None, elements_in_show_all=20, excel_path='', photo_path='', live_preview=False, continue_work=False, resize_photo=False, data_from_step=False):
         self.excel_path = excel_path
@@ -23,3 +22,9 @@ class EntryInfo:
         self.live_preview = self.live_preview.get()
         self.resize_photo = self.resize_photo.get()
         self.continue_work = self.continue_work.get()
+
+    def convert_elements_in_show_all(self):
+        self.elements_on_screen = int(self.elements_on_screen.get())
+
+    def remove_unused_references_from_dict(self):
+        self.references_dict = {k: v for k, v in self.references_dict.items() if v == True}

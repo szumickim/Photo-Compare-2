@@ -92,6 +92,7 @@ class UserForm:
 
     def step_all_photos_window(self):
         self.entry_info.program_type = ALL_IMAGES
+        self.entry_info.data_from_step = True
 
         clear_frame(self.root)
         border = ttk.LabelFrame(self.root, border=0, width=self.screen_width, height=self.screen_height)
@@ -236,9 +237,13 @@ class UserForm:
             setattr(self.entry_info, attribute_id, file_path)
 
     def run_program(self):
-        self.root.destroy()
-        self.entry_info.change_button_variable_to_boolean()
 
+        if self.entry_info.program_type == COMPARE:
+            self.entry_info.change_button_variable_to_boolean()
+        elif self.entry_info.program_type == ALL_IMAGES:
+            self.entry_info.convert_elements_in_show_all()
+            self.entry_info.remove_unused_references_from_dict()
+        self.root.destroy()
         self.run = True
 
 
