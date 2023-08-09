@@ -2,7 +2,7 @@ ALL_IMAGES: str = "Show all images"
 
 
 class EntryInfo:
-    def __init__(self, program_type, elements_in_show_all=20, excel_path='dataFromSTEP.xlsx', photo_path='', live_preview=False, continue_work=False, resize_photo=None, data_from_step=False):
+    def __init__(self, program_type=None, elements_in_show_all=20, excel_path='', photo_path='', live_preview=False, continue_work=False, resize_photo=False, data_from_step=False):
         self.excel_path = excel_path
         self.photo_path = photo_path
         self.live_preview = live_preview
@@ -17,3 +17,8 @@ class EntryInfo:
             self.continue_work = None
         else:
             self.elements_on_screen = 1
+
+    def change_button_variable_to_boolean(self):
+        self.live_preview = self.live_preview.get()
+        self.resize_photo = self.resize_photo.get()
+        self.continue_work = self.continue_work.get()
