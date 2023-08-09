@@ -44,11 +44,14 @@ def gather_data(assets_dict, photos_list, photo_reference):
             photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
             photos_list.append(photo_object)
     elif assets_dict.get("reference"):  # jeżeli jest tylko 1 zdjęcie
-        assets = assets_dict.get("reference")
-        response = get_assets(assets.get("target"))
-        asset_info = Image.open(io.BytesIO(response.content))
-        photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
-        photos_list.append(photo_object)
+        try:
+            assets = assets_dict.get("reference")
+            response = get_assets(assets.get("target"))
+            asset_info = Image.open(io.BytesIO(response.content))
+            photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
+            photos_list.append(photo_object)
+        except:
+            pass
     return photos_list
 
 

@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 from entryInfo import EntryInfo
 from tkinter.filedialog import askdirectory
-
+import photoCompareObj
 from constants import *
 
 TAG_TO_DELETE_KEY: str = 'To delete'
@@ -243,8 +243,7 @@ class UserForm:
         elif self.entry_info.program_type == ALL_IMAGES:
             self.entry_info.convert_elements_in_show_all()
             self.entry_info.remove_unused_references_from_dict()
-        self.root.destroy()
-        self.run = True
+        photoCompareObj.main(self.entry_info)
 
 
 def configue_borders(border, row_num, col_num):
