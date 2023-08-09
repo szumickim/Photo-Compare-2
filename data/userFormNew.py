@@ -48,7 +48,7 @@ class UserForm:
         compare_button = ttk.Button(self.root, text="Local", command=lambda: self.local_all_photos_window())
         compare_button.pack(fill='both', expand=True)
 
-        all_photos_button = ttk.Button(self.root, text="From STEP", command=lambda: self.all_photos_window())
+        all_photos_button = ttk.Button(self.root, text="From STEP", command=lambda: self.step_all_photos_window())
         all_photos_button.pack(fill='both', expand=True)
 
         all_photos_button = ttk.Button(self.root, text="Back", command=lambda: self.open_menu())
@@ -63,21 +63,21 @@ class UserForm:
         clear_frame(self.root)
         border = ttk.LabelFrame(self.root, border=0, width=self.screen_width, height=self.screen_height)
 
-        configue_borders(border, 4, 3)
+        configue_borders(border, 3, 3)
 
         folder_path_label = tk.Label(border, text="", width=32, relief="groove")
         folder_path_label.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
 
-        folder_label = tk.Button(border, text="Select folder Path",
-                                 command=lambda: self.select_folder_path(folder_path_label, BME_CAT_DICT_KEY))
-        folder_label.grid(row=0, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
+        folder_button = tk.Button(border, text="Select folder Path",
+                                  command=lambda: self.select_folder_path(folder_path_label, BME_CAT_DICT_KEY))
+        folder_button.grid(row=0, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
         excel_path_label = tk.Label(border, text="", width=32, relief="groove")
         excel_path_label.grid(row=1, column=1, columnspan=3, sticky=tk.NSEW)
 
-        excel_label = tk.Button(border, text="Select Excel Path",
-                                command=lambda: self.select_bme_cat_path(excel_path_label, BME_CAT_DICT_KEY))
-        excel_label.grid(row=1, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
+        excel_button = tk.Button(border, text="Select Excel Path",
+                                 command=lambda: self.select_bme_cat_path(excel_path_label, BME_CAT_DICT_KEY))
+        excel_button.grid(row=1, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
         tk.Label(border, text="Number of elements in show all: ").grid(row=2, column=0, sticky=tk.NSEW)
         self.entry_info.elements_on_screen = tk.Entry(border, width=2, justify='center')
@@ -85,10 +85,77 @@ class UserForm:
         self.entry_info.elements_on_screen.grid(row=2, column=1, sticky=tk.W)
 
         menu_frame = ttk.LabelFrame(border)
-        self.menu_label(menu_frame)
+        self.menu_label(menu_frame, back_to_menu=False)
         menu_frame.grid(row=3, column=0, columnspan=3, sticky=tk.NSEW)
 
         border.pack(fill='both', expand=True)
+
+    def step_all_photos_window(self):
+        self.entry_info.program_type = ALL_IMAGES
+
+        clear_frame(self.root)
+        border = ttk.LabelFrame(self.root, border=0, width=self.screen_width, height=self.screen_height)
+
+        configue_borders(border, 3, 3)
+
+        excel_path_label = tk.Label(border, text="", width=32, relief="groove")
+        excel_path_label.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
+        excel_button = tk.Button(border, text="Select Excel with product list",
+                                command=lambda: self.select_bme_cat_path(excel_path_label, BME_CAT_DICT_KEY))
+        excel_button.grid(row=0, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
+
+        step_references_label = tk.Label(border, text="", width=32, relief="groove")
+        step_references_label.grid(row=1, column=1, columnspan=3, sticky=tk.NSEW)
+        references_button = tk.Button(border, text="Select references",
+                                      command=lambda: self.references_window(step_references_label))
+        references_button.grid(row=1, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
+
+        tk.Label(border, text="Number of elements in show all: ").grid(row=2, column=0, sticky=tk.NSEW)
+        self.entry_info.elements_on_screen = tk.Entry(border, width=2, justify='center')
+        self.entry_info.elements_on_screen.insert(0, "3")
+        self.entry_info.elements_on_screen.grid(row=2, column=1, sticky=tk.W)
+
+        menu_frame = ttk.LabelFrame(border)
+        self.menu_label(menu_frame, back_to_menu=False)
+        menu_frame.grid(row=3, column=0, columnspan=3, sticky=tk.NSEW)
+
+        border.pack(fill='both', expand=True)
+
+    def references_window(self, step_references_label):
+        master = tk.Toplevel()
+        # ##################### CheckButtons ##############################
+
+        references_list = ['Product Image', 'Product Image further', 'BMEcat_MIME_INFO_safety_data_sheet',
+                           'BMEcat_MIME_INFO_deep_link_data_sheet', 'BMEcat_MIME_INFO_deep_link_reach_data_sheet',
+                           'Energy label', 'Circuit Diagram', 'MeasurementDrawing', 'Symbol',
+                           'BMEcat_MIME_INFO_user_manual', 'Light Distribution Curve', 'EnvironmentImage',
+                           'MIME_INFO_federation_link', 'BMEcat_MIME_INFO_FDV']
+
+        references_label = tk.Label(master)
+        for reference_name in references_list:
+            self.entry_info.references_dict[reference_name] = tk.BooleanVar()
+            tk.Checkbutton(references_label, text=reference_name,
+                           variable= self.entry_info.references_dict[reference_name],
+                           onvalue=True, offvalue=False, anchor='w').pack(fill='both')
+        references_label.grid(row=0, column=0, sticky=tk.NSEW)
+
+        options_label = tk.Label(master)
+        excel_label = tk.Button(options_label, text="Select",
+                                command=lambda: self.select_reference(master, step_references_label))
+        excel_label.pack(fill='both', expand=True)
+
+        excel_label = tk.Button(options_label, text="Exit",
+                                command=lambda: master.destroy())
+        excel_label.pack(fill='both', expand=True)
+        options_label.grid(row=0, column=1, sticky=tk.NSEW)
+
+    def select_reference(self, master, step_references_label):
+        step_references_label.configure(background="lightgreen", text="Selected")
+
+        for k, v in self.entry_info.references_dict.items():
+            self.entry_info.references_dict[k] = v.get()
+        master.destroy()
+
     def compare_window(self):
         self.entry_info.program_type = COMPARE
 
@@ -139,13 +206,18 @@ class UserForm:
                                                 offvalue=False, anchor='w')
         resize_photo_check_box.pack(fill='both')
 
-    def menu_label(self, menu_frame):
+    def menu_label(self, menu_frame, back_to_menu=True):
         ttk.Button(menu_frame, text='RUN', command=lambda: self.run_program()).pack(fill='both',
                                                                                          expand=True,
                                                                                          side=tk.LEFT)
-        ttk.Button(menu_frame, text='BACK', command=lambda: self.open_menu()).pack(fill='both',
-                                                                                   expand=True,
-                                                                                   side=tk.LEFT)
+        if back_to_menu:
+            ttk.Button(menu_frame, text='BACK', command=lambda: self.open_menu()).pack(fill='both',
+                                                                                       expand=True,
+                                                                                       side=tk.LEFT)
+        else:
+            ttk.Button(menu_frame, text='BACK', command=lambda: self.all_photos_window()).pack(fill='both',
+                                                                                               expand=True,
+                                                                                               side=tk.LEFT)
 
         ttk.Button(menu_frame, text='EXIT', command=lambda: self.root.destroy()).pack(fill='both',
                                                                                       expand=True,

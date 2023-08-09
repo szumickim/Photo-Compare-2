@@ -11,6 +11,7 @@ class EntryInfo:
         self.program_type = program_type
         self.elements_on_screen = int(elements_in_show_all)
         self.data_from_step = data_from_step
+        self.references_dict = dict()
 
         if self.program_type == ALL_IMAGES:
             self.resize_photo = None
