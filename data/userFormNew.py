@@ -264,6 +264,10 @@ def clear_frame(master):
     for widget in master.winfo_children():
         widget.destroy()
 
+def run():
+    user_form = UserForm()
+    user_form.root.mainloop()
+
 if __name__ == "__main__":
     user_form = UserForm()
     user_form.root.mainloop()
