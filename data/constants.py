@@ -2,6 +2,9 @@ LAST_COLUMN_IN_EXPORT: int = 40
 DIFFERENT: int = 2
 SAME: int = 1
 
+EXCEL_PATH = 'excel_path'
+PHOTO_PATH = 'photo_path'
+
 IS_DIFFERENT = "Different"
 IS_SIMILAR = "Similar"
 POSSIBLE: str = "Possible"

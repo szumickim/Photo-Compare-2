@@ -1,3 +1,5 @@
+import pandas as pd
+
 ALL_IMAGES: str = "Show all images"
 
 class EntryInfo:
@@ -11,6 +13,7 @@ class EntryInfo:
         self.elements_on_screen = int(elements_in_show_all)
         self.data_from_step = data_from_step
         self.references_dict = dict()
+        self.pim_id_list: list = []
 
         if self.program_type == ALL_IMAGES:
             self.resize_photo = None
@@ -28,3 +31,6 @@ class EntryInfo:
 
     def remove_unused_references_from_dict(self):
         self.references_dict = {k: v for k, v in self.references_dict.items() if v == True}
+
+    def add_pim_id_list(self):
+        self.pim_id_list = pd.read_excel(self.excel_path).iloc[:, 0].tolist()

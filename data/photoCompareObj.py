@@ -19,16 +19,10 @@ from constants import *
 def main(entry_info: EntryInfo):
 
     if entry_info.data_from_step:
-        pim_id_list = ['PIM21310949', 'PIM21310950', 'PIM21386953', 'PIM21310948', 'PIM21310813', 'PIM21310814',
-                       'PIM21310815', 'PRD_STK_6437955', 'PIM21310951', 'PIM21310947', 'PIM19579459', 'PIM19579461',
-                       'PIM21310807', 'PIM21310808', 'PIM21310809', 'PIM21310810', 'PIM21310811', 'PIM21310812',
-                       'PIM20963163', 'PIM20919802', 'PIM20919835', 'PIM20919836', 'PIM20919837', 'PIM20919838',
-                       'PIM20919839', 'PIM20919849', 'PIM20919850', 'PIM20919855', 'PIM21310816']
-        photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
+        photo_reference_list = list(entry_info.references_dict.keys())
         context = 'en-GL'
+        products_collection = create_product_collection_from_step(entry_info.pim_id_list, photo_reference_list, context)
         first_row = 0
-        products_collection = create_product_collection_from_step(pim_id_list, photo_reference_list, context)
-
     else:
         # Wczytywanie excela z informacjami o zdjęciach
         df_export, first_row = read_export(entry_info.excel_path, entry_info.continue_work)

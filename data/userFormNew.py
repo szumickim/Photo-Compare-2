@@ -26,7 +26,7 @@ class UserForm:
         self.root.title("PhotoCompare")
         self.buttons_width = self.screen_width/20
         self.buttons_height = ""
-        self.entry_info = EntryInfo()
+        self.entry_info: EntryInfo()
 
         self.open_menu()
 
@@ -58,6 +58,7 @@ class UserForm:
         exit_button.pack(fill='both', expand=True, side=tk.RIGHT)
 
     def local_all_photos_window(self):
+        self.entry_info = EntryInfo()
         self.entry_info.program_type = ALL_IMAGES
 
         clear_frame(self.root)
@@ -69,14 +70,14 @@ class UserForm:
         folder_path_label.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
 
         folder_button = tk.Button(border, text="Select folder Path",
-                                  command=lambda: self.select_folder_path(folder_path_label, BME_CAT_DICT_KEY))
+                                  command=lambda: self.select_folder_path(folder_path_label, PHOTO_PATH))
         folder_button.grid(row=0, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
         excel_path_label = tk.Label(border, text="", width=32, relief="groove")
         excel_path_label.grid(row=1, column=1, columnspan=3, sticky=tk.NSEW)
 
         excel_button = tk.Button(border, text="Select Excel Path",
-                                 command=lambda: self.select_bme_cat_path(excel_path_label, BME_CAT_DICT_KEY))
+                                 command=lambda: self.select_excel_path(excel_path_label, EXCEL_PATH))
         excel_button.grid(row=1, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
         tk.Label(border, text="Number of elements in show all: ").grid(row=2, column=0, sticky=tk.NSEW)
@@ -91,6 +92,7 @@ class UserForm:
         border.pack(fill='both', expand=True)
 
     def step_all_photos_window(self):
+        self.entry_info = EntryInfo()
         self.entry_info.program_type = ALL_IMAGES
         self.entry_info.data_from_step = True
 
@@ -102,7 +104,7 @@ class UserForm:
         excel_path_label = tk.Label(border, text="", width=32, relief="groove")
         excel_path_label.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
         excel_button = tk.Button(border, text="Select Excel with product list",
-                                command=lambda: self.select_bme_cat_path(excel_path_label, BME_CAT_DICT_KEY))
+                                command=lambda: self.select_excel_path(excel_path_label, EXCEL_PATH))
         excel_button.grid(row=0, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
         step_references_label = tk.Label(border, text="", width=32, relief="groove")
@@ -158,6 +160,7 @@ class UserForm:
         master.destroy()
 
     def compare_window(self):
+        self.entry_info = EntryInfo()
         self.entry_info.program_type = COMPARE
 
         clear_frame(self.root)
@@ -169,14 +172,14 @@ class UserForm:
         folder_path_label.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
 
         folder_label = tk.Button(border, text="Select folder Path",
-                                 command=lambda: self.select_folder_path(folder_path_label, BME_CAT_DICT_KEY))
+                                 command=lambda: self.select_folder_path(folder_path_label, PHOTO_PATH))
         folder_label.grid(row=0, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
         excel_path_label = tk.Label(border, text="", width=32, relief="groove")
         excel_path_label.grid(row=1, column=1, columnspan=3, sticky=tk.NSEW)
 
         excel_label = tk.Button(border, text="Select Excel Path",
-                                command=lambda: self.select_bme_cat_path(excel_path_label, BME_CAT_DICT_KEY))
+                                command=lambda: self.select_excel_path(excel_path_label, EXCEL_PATH))
         excel_label.grid(row=1, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
         check_buttons_label = ttk.LabelFrame(border)
@@ -230,7 +233,7 @@ class UserForm:
             label_to_paste['text'] = folder_path[folder_path.rfind('/') + 1:]
             setattr(self.entry_info, attribute_id, folder_path)
 
-    def select_bme_cat_path(self, label_to_paste,  attribute_id):
+    def select_excel_path(self, label_to_paste, attribute_id):
         file_path = askopenfilename(title="Select A File")
         if file_path:
             label_to_paste['text'] = file_path[file_path.rfind('/') + 1:]
@@ -242,9 +245,13 @@ class UserForm:
             self.entry_info.change_button_variable_to_boolean()
         elif self.entry_info.program_type == ALL_IMAGES:
             self.entry_info.convert_elements_in_show_all()
-            self.entry_info.remove_unused_references_from_dict()
-        photoCompareObj.main(self.entry_info)
 
+        if self.entry_info.data_from_step:
+            self.entry_info.remove_unused_references_from_dict()
+            self.entry_info.add_pim_id_list()
+        photoCompareObj.main(self.entry_info)
+        tk.messagebox.showinfo(title="Photo Compare", message="Finished!")
+        self.open_menu()
 
 def configue_borders(border, row_num, col_num):
     for i in range(row_num):
