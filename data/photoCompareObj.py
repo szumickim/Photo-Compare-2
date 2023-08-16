@@ -99,9 +99,6 @@ def main(entry_info: EntryInfo):
     if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
         download_selected(products_collection)
 
-
-
-
 def download_selected(products_collection):
     for product in products_collection:
         product.download_selected()
