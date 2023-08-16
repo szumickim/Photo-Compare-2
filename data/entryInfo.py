@@ -33,4 +33,4 @@ class EntryInfo:
         self.references_dict = {k: v for k, v in self.references_dict.items() if v == True}
 
     def add_pim_id_list(self):
-        self.pim_id_list = pd.read_excel(self.excel_path).iloc[:, 0].tolist()
+        self.pim_id_list = pd.read_excel(self.excel_path, header=None).iloc[:, 0].tolist()

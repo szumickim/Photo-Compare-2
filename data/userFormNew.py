@@ -20,6 +20,7 @@ class UserForm:
         self.screen_width = 400
         self.screen_height = 200
         self.root = tk.Tk()
+        self.root.iconbitmap('data/images/icon.ico')
         self.root.geometry(f'{self.screen_width}x{self.screen_height}')
         self.root.configure(background='#f5f6f7')
         self.root.resizable(True, True)

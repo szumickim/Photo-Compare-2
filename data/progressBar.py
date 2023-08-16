@@ -2,11 +2,10 @@ from tkinter import ttk
 import tkinter as tk
 
 
-class ClsProgress:
+class ClsProgress():
     def __init__(self, master):
         # root window
         self.root = master
-
         # progressbar
         self.bar = ttk.Progressbar(
             self.root,
