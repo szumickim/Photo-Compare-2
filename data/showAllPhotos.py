@@ -8,6 +8,7 @@ from dataFromStep import create_product_collection_from_step
 global next_product_id
 
 
+
 def show_all_photos(products_list, photo_path, progress_counter: dict, entry_info):
     IMAGE_WIDTH: int = 200
     IMAGE_HEIGHT: int = 200
@@ -44,6 +45,9 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
     counter = 0
     products_list = products_list if not entry_info.data_from_step \
         else create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()), "en-GL")
+
+    if entry_info.data_from_step:
+        products_list[0].download_selected()
 
     for product in products_list:
 
@@ -165,6 +169,8 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
             global next_product_id
             next_product_id = go_to_text_box.get("1.0", "end-1c")
             button_action.set(int(button_type))
+        elif button_type == ButtonConst.DOWNLOAD:
+            button_action.set(int(button_type))
         root.quit()
         root.destroy()
         button_action.get()
@@ -199,6 +205,10 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
 
     go_to_button = tk.Button(root, text="Go To", command=lambda: buttons_function(ButtonConst.GO_TO), width=30, height=5)
     go_to_button.place(x=LAST_COLUMN_POSITION, y=410)
+
+    if entry_info.data_from_step:
+        close_and_download_button = tk.Button(root, text="Close and download selected", command=lambda: buttons_function(ButtonConst.DOWNLOAD), width=30, height=5)
+        close_and_download_button.place(x=LAST_COLUMN_POSITION, y=500)
 
     # Closing by 'X' warning
     def on_closing():

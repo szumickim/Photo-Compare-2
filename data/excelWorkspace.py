@@ -109,8 +109,8 @@ def create_summary_excel(products_collection, folder_to_save):
 
                 df_summary.loc[df_summary.shape[0]] = [getattr(product, "<ID>"), first_photo.name, first_photo.asset_type, first_photo.height, first_photo.width, second_photo.name, second_photo.asset_type, second_photo.height, second_photo.width, better_photo]
 
-    format_excel(df_summary, f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", SUMMARY_FORMAT)
-    # df_summary.to_excel(f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", index=False)
+    # format_excel(df_summary, f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", SUMMARY_FORMAT)
+    df_summary.to_excel(f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", index=False)
 
 
 def add_column_to_excel(excel_path, products_collection, first_row):

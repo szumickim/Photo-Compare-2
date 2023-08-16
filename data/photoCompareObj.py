@@ -32,11 +32,10 @@ def main(entry_info: EntryInfo):
         # tworzenie obiektów 'products'
         products_collection = create_products_collection(df_export, entry_info)
 
-    if entry_info.resize_photo:
-        entry_info.photo_path = resize_photos(entry_info.photo_path)
 
     # Inicjowanie progressBaru
     if entry_info.program_type == COMPARE:
+        compare_photo_path = resize_photos(entry_info.photo_path) if entry_info.resize_photo else entry_info.photo_path
         progres_bar = progressBar.ClsProgress(tk.Toplevel())
         progres_bar.add_counter()
     else:
@@ -67,7 +66,7 @@ def main(entry_info: EntryInfo):
             product = products_collection[i]
             product.photos_connection_type = IS_DIFFERENT
 
-            continue_program, button_action = compare_images_loop(product, entry_info, continue_program, button_action)
+            continue_program, button_action = compare_images_loop(product, entry_info, continue_program, button_action, compare_photo_path)
 
             progres_bar.progress(int(i - first_row) / (len(products_collection) - first_row) * 100)
             progres_bar.change_counter_label_text(f'{int(i - first_row)}/{len(products_collection) - first_row}')
@@ -83,26 +82,33 @@ def main(entry_info: EntryInfo):
         elif button_action == int(ButtonConst.NEXT):
             i += entry_info.elements_on_screen
 
-
     if entry_info.program_type == COMPARE:
         add_column_to_excel(entry_info.excel_path, products_collection, first_row)
         create_summary_excel(products_collection, entry_info.photo_path)
         # Wyłączanie progressbaru
         progres_bar.kill_bar()
+        # Usuwanie tymczasowych, rozszerzonych zdjęć
+        if entry_info.resize_photo:
+            shutil.rmtree(compare_photo_path)
 
     elif entry_info.program_type == ALL_IMAGES:
         work_with_show_all_summ_excel(products_collection, entry_info.photo_path)
 
-    # Usuwanie tymczasowych, rozszerzonych zdjęć
-    if entry_info.resize_photo:
-        shutil.rmtree(entry_info.photo_path)
+    if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
+        download_selected(products_collection)
 
+
+
+
+def download_selected(products_collection):
+    for product in products_collection:
+        product.download_selected()
 
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
 
     button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info)
-    if button_action == int(ButtonConst.CLOSE):
+    if button_action in [int(ButtonConst.CLOSE), int(ButtonConst.DOWNLOAD)]:
         continue_program = False
     elif button_action == int(ButtonConst.GO_TO):
         go_to_i = go_to_product(products_collection, next_product_id)
@@ -111,13 +117,13 @@ def show_all_images_loop(products_collection: list, entry_info: EntryInfo, conti
     return continue_program, button_action, i
 
 
-def compare_images_loop(product: Product, entry_info: EntryInfo, continue_program, button_action):
+def compare_images_loop(product: Product, entry_info: EntryInfo, continue_program, button_action, photo_path):
     # pętla po wszystkich możliwych kombinacjach zdjęć produktu
     for first_photo, second_photo in itertools.combinations(product.all_photos, 2):
 
         # Sczytywanie danych zdjęć
-        first_photo.photo_array = cv2.imread(f"{entry_info.photo_path}/{first_photo.name}")
-        second_photo.photo_array = cv2.imread(f"{entry_info.photo_path}/{second_photo.name}")
+        first_photo.photo_array = cv2.imread(f"{photo_path}/{first_photo.name}")
+        second_photo.photo_array = cv2.imread(f"{photo_path}/{second_photo.name}")
 
         # Porównywanie odbywa się jedynie w przypadku, gdy oba zdjęcia są tych samych rozmiarów
         if first_photo.photo_array.shape[0] == second_photo.photo_array.shape[0] and first_photo.photo_array.shape[1] == \
@@ -128,7 +134,7 @@ def compare_images_loop(product: Product, entry_info: EntryInfo, continue_progra
             second_photo.photo_array = cv2.cvtColor(second_photo.photo_array, cv2.COLOR_BGR2GRAY)
 
             # Porównywanie
-            continue_program, button_action = compare_images(first_photo, second_photo, product, entry_info.photo_path,
+            continue_program, button_action = compare_images(first_photo, second_photo, product, photo_path,
                                                              entry_info.live_preview)
 
             if not continue_program:

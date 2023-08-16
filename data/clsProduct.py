@@ -1,4 +1,5 @@
 import itertools
+import os
 
 
 class ProductBasics:
@@ -37,3 +38,10 @@ class ProductStep(ProductBasics):
         super().__init__()
         self.all_photos: list = []
         self.product_id = pim_id
+
+    def download_selected(self):
+        if not os.path.exists('SelectedPhotos'):
+            os.makedirs('SelectedPhotos')
+        for photo in self.all_photos:
+            if photo.selected_photo:
+                photo.asset_data.save(f"SelectedPhotos/{photo.name}.{photo.asset_data.format}")

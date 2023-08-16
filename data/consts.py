@@ -7,6 +7,7 @@ class ButtonConst(IntEnum):
     CLOSE = 2
     BACK = 3
     GO_TO = 4
+    DOWNLOAD = 5
 
 
 class ShowAllConst(StrEnum):
