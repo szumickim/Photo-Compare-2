@@ -13,41 +13,20 @@ from showAllPhotos import show_all_photos
 from showCompareImages import show_image
 from excelWorkspace import *
 from dataFromStep import create_product_collection_from_step
+from dataFromStep import create_products_objects
 import progressBar
-
-LAST_COLUMN_IN_EXPORT: int = 40
-DIFFERENT: int = 2
-SAME: int = 1
-
-IS_DIFFERENT = "Different"
-IS_SIMILAR = "Similar"
-POSSIBLE: str = "Possible"
-MANUAL: str = "Similar - manual"
-
-ALL_IMAGES: str = "Show all images"
-COMPARE: str = "Compare"
-
-SIMILARITY_TYPE_COLUMN: str = "Similarity type"
-
-PRODUCTS_ON_SCREEN: int = 3
-
-SHOW_ALL_SUMMARY_FORMAT: int = 1
-SUMMARY_FORMAT: int = 2
-
+from constants import *
 
 def main(entry_info: EntryInfo):
 
     if entry_info.data_from_step:
-        pim_id_list = ['PIM21310949', 'PIM21310950', 'PIM21386953', 'PIM21310948', 'PIM21310813', 'PIM21310814',
-                       'PIM21310815', 'PRD_STK_6437955', 'PIM21310951', 'PIM21310947', 'PIM19579459', 'PIM19579461',
-                       'PIM21310807', 'PIM21310808', 'PIM21310809', 'PIM21310810', 'PIM21310811', 'PIM21310812',
-                       'PIM20963163', 'PIM20919802', 'PIM20919835', 'PIM20919836', 'PIM20919837', 'PIM20919838',
-                       'PIM20919839', 'PIM20919849', 'PIM20919850', 'PIM20919855', 'PIM21310816']
-        photo_reference_list = ['Product Image', 'Product Image further', 'EnvironmentImage']
+        photo_reference_list = list(entry_info.references_dict.keys())
         context = 'en-GL'
-        first_row = 0
-        products_collection = create_product_collection_from_step(pim_id_list, photo_reference_list, context)
+        products_collection = create_products_objects(entry_info.pim_id_list)
+        if entry_info.gather_data_before_start:
+            products_collection = create_product_collection_from_step(products_collection, photo_reference_list, context)
 
+        first_row = 0
     else:
         # Wczytywanie excela z informacjami o zdjęciach
         df_export, first_row = read_export(entry_info.excel_path, entry_info.continue_work)
@@ -55,11 +34,10 @@ def main(entry_info: EntryInfo):
         # tworzenie obiektów 'products'
         products_collection = create_products_collection(df_export, entry_info)
 
-    if entry_info.resize_photo:
-        entry_info.photo_path = resize_photos(entry_info.photo_path)
 
     # Inicjowanie progressBaru
     if entry_info.program_type == COMPARE:
+        compare_photo_path = resize_photos(entry_info.photo_path) if entry_info.resize_photo else entry_info.photo_path
         progres_bar = progressBar.ClsProgress(tk.Toplevel())
         progres_bar.add_counter()
     else:
@@ -90,7 +68,7 @@ def main(entry_info: EntryInfo):
             product = products_collection[i]
             product.photos_connection_type = IS_DIFFERENT
 
-            continue_program, button_action = compare_images_loop(product, entry_info, continue_program, button_action)
+            continue_program, button_action = compare_images_loop(product, entry_info, continue_program, button_action, compare_photo_path)
 
             progres_bar.progress(int(i - first_row) / (len(products_collection) - first_row) * 100)
             progres_bar.change_counter_label_text(f'{int(i - first_row)}/{len(products_collection) - first_row}')
@@ -106,26 +84,33 @@ def main(entry_info: EntryInfo):
         elif button_action == int(ButtonConst.NEXT):
             i += entry_info.elements_on_screen
 
-
     if entry_info.program_type == COMPARE:
         add_column_to_excel(entry_info.excel_path, products_collection, first_row)
         create_summary_excel(products_collection, entry_info.photo_path)
         # Wyłączanie progressbaru
         progres_bar.kill_bar()
+        # Usuwanie tymczasowych, rozszerzonych zdjęć
+        if entry_info.resize_photo:
+            shutil.rmtree(compare_photo_path)
 
     elif entry_info.program_type == ALL_IMAGES:
         work_with_show_all_summ_excel(products_collection, entry_info.photo_path)
 
-    # Usuwanie tymczasowych, rozszerzonych zdjęć
-    if entry_info.resize_photo:
-        shutil.rmtree(entry_info.photo_path)
+    if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
+        download_selected(products_collection)
 
+
+
+
+def download_selected(products_collection):
+    for product in products_collection:
+        product.download_selected()
 
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
 
-    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info.data_from_step)
-    if button_action == int(ButtonConst.CLOSE):
+    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info)
+    if button_action in [int(ButtonConst.CLOSE), int(ButtonConst.DOWNLOAD)]:
         continue_program = False
     elif button_action == int(ButtonConst.GO_TO):
         go_to_i = go_to_product(products_collection, next_product_id)
@@ -134,13 +119,13 @@ def show_all_images_loop(products_collection: list, entry_info: EntryInfo, conti
     return continue_program, button_action, i
 
 
-def compare_images_loop(product: Product, entry_info: EntryInfo, continue_program, button_action):
+def compare_images_loop(product: Product, entry_info: EntryInfo, continue_program, button_action, photo_path):
     # pętla po wszystkich możliwych kombinacjach zdjęć produktu
     for first_photo, second_photo in itertools.combinations(product.all_photos, 2):
 
         # Sczytywanie danych zdjęć
-        first_photo.photo_array = cv2.imread(f"{entry_info.photo_path}/{first_photo.name}")
-        second_photo.photo_array = cv2.imread(f"{entry_info.photo_path}/{second_photo.name}")
+        first_photo.photo_array = cv2.imread(f"{photo_path}/{first_photo.name}")
+        second_photo.photo_array = cv2.imread(f"{photo_path}/{second_photo.name}")
 
         # Porównywanie odbywa się jedynie w przypadku, gdy oba zdjęcia są tych samych rozmiarów
         if first_photo.photo_array.shape[0] == second_photo.photo_array.shape[0] and first_photo.photo_array.shape[1] == \
@@ -151,7 +136,7 @@ def compare_images_loop(product: Product, entry_info: EntryInfo, continue_progra
             second_photo.photo_array = cv2.cvtColor(second_photo.photo_array, cv2.COLOR_BGR2GRAY)
 
             # Porównywanie
-            continue_program, button_action = compare_images(first_photo, second_photo, product, entry_info.photo_path,
+            continue_program, button_action = compare_images(first_photo, second_photo, product, photo_path,
                                                              entry_info.live_preview)
 
             if not continue_program:

@@ -109,8 +109,8 @@ def create_summary_excel(products_collection, folder_to_save):
 
                 df_summary.loc[df_summary.shape[0]] = [getattr(product, "<ID>"), first_photo.name, first_photo.asset_type, first_photo.height, first_photo.width, second_photo.name, second_photo.asset_type, second_photo.height, second_photo.width, better_photo]
 
-    format_excel(df_summary, f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", SUMMARY_FORMAT)
-    # df_summary.to_excel(f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", index=False)
+    # format_excel(df_summary, f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", SUMMARY_FORMAT)
+    df_summary.to_excel(f"{folder_to_save}/Summary {set_today_date('-')}.xlsx", index=False)
 
 
 def add_column_to_excel(excel_path, products_collection, first_row):
@@ -149,13 +149,13 @@ def backup_excel(products_collection, folder_to_save):
 
 
 def create_show_all_summ_excel(products_collection, excel_path):
-    show_all_summ_columns = [ToDeleteConst.PRODUCT_ID, ToDeleteConst.PHOTO_ID, ToDeleteConst.PHOTO_REFERENCE,
-                             ToDeleteConst.HEIGHT, ToDeleteConst.WIDTH]
+    show_all_summ_columns = [ShowAllConst.PRODUCT_ID, ShowAllConst.PHOTO_ID, ShowAllConst.PHOTO_REFERENCE,
+                             ShowAllConst.HEIGHT, ShowAllConst.WIDTH]
     df_show_all_summ = pd.DataFrame(columns=show_all_summ_columns)
 
     for product in products_collection:
         for photo in product.all_photos:
-            if photo.delete_photo:
+            if photo.selected_photo:
                 df_show_all_summ.loc[df_show_all_summ.shape[0]] = [product.product_id, photo.name, photo.asset_type, photo.height, photo.width]
 
     df_show_all_summ.to_excel(excel_path, index=False)
@@ -172,7 +172,7 @@ def modify_show_all_summ_excel(products_collection, excel_path):
     counter = i
     for product in products_collection:
         for photo in product.all_photos:
-            if photo.delete_photo:
+            if photo.selected_photo:
                 for column, element in enumerate([product.product_id, photo.name, photo.asset_type, photo.height, photo.width], start=1):
                     sheet.cell(row=counter, column=column).value = element
 

@@ -4,10 +4,12 @@ from PIL import Image, ImageTk
 from consts import ButtonConst
 from progressBar import ClsProgress
 from tkinter import messagebox
+from dataFromStep import create_product_collection_from_step
 global next_product_id
 
 
-def show_all_photos(products_list, photo_path, progress_counter: dict, data_form_step=False):
+
+def show_all_photos(products_list, photo_path, progress_counter: dict, entry_info):
     IMAGE_WIDTH: int = 200
     IMAGE_HEIGHT: int = 200
 
@@ -41,6 +43,12 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
     photos_names_dict = {}
     image_list = []
     counter = 0
+    products_list = create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()), "en-GL") \
+        if entry_info.data_from_step and not entry_info.gather_data_before_start else products_list
+
+    if entry_info.data_from_step:
+        products_list[0].download_selected()
+
     for product in products_list:
 
         # Nazwa produktu
@@ -50,7 +58,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
         product_name.config(state='disabled')
 
         for photo in product.all_photos:
-            image = photo.asset_data if data_form_step else Image.open(f"{photo_path}/{photo.name}")
+            image = photo.asset_data if entry_info.data_from_step else Image.open(f"{photo_path}/{photo.name}")
             image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
             my_img = ImageTk.PhotoImage(image)
             image_list.append(my_img)
@@ -77,7 +85,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
             # Set the text for each checkbutton
             photos_names_dict[dict_key] = tk.Checkbutton(second_frame, text=photo.name)
 
-            if photo.delete_photo:
+            if photo.selected_photo:
                 # Create a new instance of IntVar() for each checkbutton
                 photos_names_dict[dict_key].var = tk.IntVar(value=1)
             else:
@@ -119,16 +127,16 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
         counter += len(product.all_photos)
         x_position, y_position = 0, y_position + 6
 
-    def select_photos_to_delete(products_list):
+    def select_photos(products_list):
 
         for product in products_list:
             for photo in product.all_photos:
                 checkbnt = photos_names_dict.get(f"{product.product_id};{photo.name}")
                 if checkbnt.var.get():
-                    photo.delete_photo = True
+                    photo.selected_photo = True
                     print('Item selected: {}'.format(checkbnt['text']))
                 else:
-                    photo.delete_photo = False
+                    photo.selected_photo = False
 
     # #####################Right site of frame#########################
 
@@ -151,15 +159,17 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
 
     def buttons_function(button_type):
         if button_type == ButtonConst.NEXT:
-            select_photos_to_delete(products_list)
+            select_photos(products_list)
         elif button_type == ButtonConst.CLOSE:
             button_action.set(int(button_type))
         elif button_type == ButtonConst.BACK:
-            select_photos_to_delete(products_list)
+            select_photos(products_list)
             button_action.set(int(button_type))
         elif button_type == ButtonConst.GO_TO:
             global next_product_id
             next_product_id = go_to_text_box.get("1.0", "end-1c")
+            button_action.set(int(button_type))
+        elif button_type == ButtonConst.DOWNLOAD:
             button_action.set(int(button_type))
         root.quit()
         root.destroy()
@@ -195,6 +205,10 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
 
     go_to_button = tk.Button(root, text="Go To", command=lambda: buttons_function(ButtonConst.GO_TO), width=30, height=5)
     go_to_button.place(x=LAST_COLUMN_POSITION, y=410)
+
+    if entry_info.data_from_step:
+        close_and_download_button = tk.Button(root, text="Close and download selected", command=lambda: buttons_function(ButtonConst.DOWNLOAD), width=30, height=5)
+        close_and_download_button.place(x=LAST_COLUMN_POSITION, y=500)
 
     # Closing by 'X' warning
     def on_closing():

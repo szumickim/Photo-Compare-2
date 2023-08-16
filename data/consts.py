@@ -7,9 +7,10 @@ class ButtonConst(IntEnum):
     CLOSE = 2
     BACK = 3
     GO_TO = 4
+    DOWNLOAD = 5
 
 
-class ToDeleteConst(StrEnum):
+class ShowAllConst(StrEnum):
     PRODUCT_ID = 'Product <ID>'
     PHOTO_ID = 'Picture ID'
     PHOTO_REFERENCE = 'Reference'
