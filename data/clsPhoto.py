@@ -6,7 +6,7 @@ class PhotoBasics:
         self.asset_type = None
         self.similar_photo = None
         self.photo_array = None
-        self.delete_photo = False
+        self.selected_photo = False
         self.validated = False
         self.worse = False
 
