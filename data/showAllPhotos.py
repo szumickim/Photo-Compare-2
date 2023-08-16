@@ -4,10 +4,11 @@ from PIL import Image, ImageTk
 from consts import ButtonConst
 from progressBar import ClsProgress
 from tkinter import messagebox
+from dataFromStep import create_product_collection_from_step
 global next_product_id
 
 
-def show_all_photos(products_list, photo_path, progress_counter: dict, data_form_step=False):
+def show_all_photos(products_list, photo_path, progress_counter: dict, entry_info):
     IMAGE_WIDTH: int = 200
     IMAGE_HEIGHT: int = 200
 
@@ -41,6 +42,9 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
     photos_names_dict = {}
     image_list = []
     counter = 0
+    products_list = products_list if not entry_info.data_from_step \
+        else create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()), "en-GL")
+
     for product in products_list:
 
         # Nazwa produktu
@@ -50,7 +54,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, data_form
         product_name.config(state='disabled')
 
         for photo in product.all_photos:
-            image = photo.asset_data if data_form_step else Image.open(f"{photo_path}/{photo.name}")
+            image = photo.asset_data if entry_info.data_from_step else Image.open(f"{photo_path}/{photo.name}")
             image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
             my_img = ImageTk.PhotoImage(image)
             image_list.append(my_img)

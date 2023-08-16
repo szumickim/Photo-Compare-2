@@ -8,15 +8,18 @@ import io
 import threading
 import os
 import urllib.request
+import warnings
 
+
+warnings.filterwarnings('ignore')
 LOGIN = 'SZUMIMIC'
 PASSWORD = 'step23'
 FIND_ID_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/products' # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
 GET_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/assets' # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
 
 
-def create_product_collection_from_step(pim_id_list, photo_reference_list, context):
-    products_list = create_products_objects(pim_id_list)
+def create_product_collection_from_step(products_list, photo_reference_list, context):
+    # products_list = create_products_objects(pim_id_list)
     for photo_reference in photo_reference_list:
         get_assets_id(products_list, photo_reference, context)
     return products_list
@@ -36,8 +39,6 @@ def get_assets_id(products_list, photo_reference, context):
         t = threading.Thread(target=get_asset_id_mutli, args=(semaphore, product, photo_reference, context))
         threads.append(t)
         t.start()
-
-
 
     # wait for all threads to finish
     for t in threads:

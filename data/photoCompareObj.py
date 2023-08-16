@@ -13,6 +13,7 @@ from showAllPhotos import show_all_photos
 from showCompareImages import show_image
 from excelWorkspace import *
 from dataFromStep import create_product_collection_from_step
+from dataFromStep import create_products_objects
 import progressBar
 from constants import *
 
@@ -21,7 +22,8 @@ def main(entry_info: EntryInfo):
     if entry_info.data_from_step:
         photo_reference_list = list(entry_info.references_dict.keys())
         context = 'en-GL'
-        products_collection = create_product_collection_from_step(entry_info.pim_id_list, photo_reference_list, context)
+        # products_collection = create_product_collection_from_step(entry_info.pim_id_list, photo_reference_list, context)
+        products_collection = create_products_objects(entry_info.pim_id_list)
         first_row = 0
     else:
         # Wczytywanie excela z informacjami o zdjęciach
@@ -99,7 +101,7 @@ def main(entry_info: EntryInfo):
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
 
-    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info.data_from_step)
+    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info)
     if button_action == int(ButtonConst.CLOSE):
         continue_program = False
     elif button_action == int(ButtonConst.GO_TO):
