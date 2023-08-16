@@ -14,6 +14,7 @@ class EntryInfo:
         self.data_from_step = data_from_step
         self.references_dict = dict()
         self.pim_id_list: list = []
+        self.gather_data_before_start: bool = False
 
         if self.program_type == ALL_IMAGES:
             self.resize_photo = None

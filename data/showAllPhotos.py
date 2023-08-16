@@ -43,8 +43,8 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
     photos_names_dict = {}
     image_list = []
     counter = 0
-    products_list = products_list if not entry_info.data_from_step \
-        else create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()), "en-GL")
+    products_list = create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()), "en-GL") \
+        if entry_info.data_from_step and not entry_info.gather_data_before_start else products_list
 
     if entry_info.data_from_step:
         products_list[0].download_selected()

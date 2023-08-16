@@ -5,6 +5,7 @@ from entryInfo import EntryInfo
 from tkinter.filedialog import askdirectory
 import photoCompareObj
 from constants import *
+from PIL import ImageTk, Image
 
 TAG_TO_DELETE_KEY: str = 'To delete'
 BME_CAT_DICT_KEY: str = 'BME_CAT'
@@ -12,6 +13,7 @@ EXCEL_DICT_KEY: str = 'Excel'
 PROGRAM_DELETE_TAG: str = 'Delete'
 PROGRAM_MFPNR: str = 'MFPNR'
 PROGRAM_BME_TO_EXCEL: str = 'BME2EXCEL'
+
 
 
 class UserForm:
@@ -119,11 +121,32 @@ class UserForm:
         self.entry_info.elements_on_screen.insert(0, "3")
         self.entry_info.elements_on_screen.grid(row=2, column=1, sticky=tk.W)
 
+        global is_on
+        is_on = True
+
+        tk.Label(border, text="Gather all images before start: ").grid(row=3, column=0, sticky=tk.NSEW)
+        on_img = ImageTk.PhotoImage(Image.open('data/images/on.png'))
+        off_img = ImageTk.PhotoImage(Image.open('data/images/off.png'))
+
+        def switch_on_off_button():
+            if self.entry_info.gather_data_before_start:
+                button_on_off.config(image=off_img)
+                self.entry_info.gather_data_before_start = False
+            else:
+                button_on_off.config(image=on_img)
+                self.entry_info.gather_data_before_start = True
+
+        button_on_off = tk.Button(border, image=off_img,
+                                command= switch_on_off_button, bd=0)
+
+        button_on_off.grid(row=3, column=1, sticky=tk.W)
+
         menu_frame = ttk.LabelFrame(border)
         self.menu_label(menu_frame, back_to_menu=False)
-        menu_frame.grid(row=3, column=0, columnspan=3, sticky=tk.NSEW)
+        menu_frame.grid(row=4, column=0, columnspan=3, sticky=tk.NSEW)
 
         border.pack(fill='both', expand=True)
+
 
     def references_window(self, step_references_label):
         master = tk.Toplevel()
@@ -268,6 +291,8 @@ def clear_frame(master):
 def run():
     user_form = UserForm()
     user_form.root.mainloop()
+
+
 
 if __name__ == "__main__":
     user_form = UserForm()
