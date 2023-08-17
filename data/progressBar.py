@@ -6,6 +6,7 @@ class ClsProgress():
     def __init__(self, master):
         # root window
         self.root = master
+
         # progressbar
         self.bar = ttk.Progressbar(
             self.root,
@@ -15,6 +16,9 @@ class ClsProgress():
         )
 
         self.bar.pack()
+
+    def window_always_on_top(self):
+        self.root.attributes('-topmost', True)
 
     def add_counter(self):
         self.counter_label_text = tk.StringVar()

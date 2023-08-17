@@ -121,9 +121,6 @@ class UserForm:
         self.entry_info.elements_on_screen.insert(0, "3")
         self.entry_info.elements_on_screen.grid(row=2, column=1, sticky=tk.W)
 
-        global is_on
-        is_on = True
-
         tk.Label(border, text="Gather all images before start: ").grid(row=3, column=0, sticky=tk.NSEW)
         on_img = ImageTk.PhotoImage(Image.open('data/images/on.png'))
         off_img = ImageTk.PhotoImage(Image.open('data/images/off.png'))
@@ -136,7 +133,7 @@ class UserForm:
                 button_on_off.config(image=on_img)
                 self.entry_info.gather_data_before_start = True
 
-        button_on_off = tk.Button(border, image=off_img,
+        button_on_off = tk.Button(border, image=on_img,
                                 command= switch_on_off_button, bd=0)
 
         button_on_off.grid(row=3, column=1, sticky=tk.W)
@@ -273,9 +270,10 @@ class UserForm:
         if self.entry_info.data_from_step:
             self.entry_info.remove_unused_references_from_dict()
             self.entry_info.add_pim_id_list()
+        self.open_menu()
         photoCompareObj.main(self.entry_info)
         tk.messagebox.showinfo(title="Photo Compare", message="Finished!")
-        self.open_menu()
+
 
 def configue_borders(border, row_num, col_num):
     for i in range(row_num):

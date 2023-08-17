@@ -6,9 +6,9 @@ import json
 from PIL import Image
 import io
 import threading
-import os
-import urllib.request
 import warnings
+import progressBar
+import tkinter as tk
 
 
 warnings.filterwarnings('ignore')
@@ -19,9 +19,14 @@ GET_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/assets' # /PIM
 
 
 def create_product_collection_from_step(products_list, photo_reference_list, context):
-    # products_list = create_products_objects(pim_id_list)
-    for photo_reference in photo_reference_list:
+    progres_bar = progressBar.ClsProgress(tk.Toplevel())
+    progres_bar.add_counter()
+    progres_bar.window_always_on_top()
+    for index, photo_reference in enumerate(photo_reference_list):
+        progres_bar.change_counter_label_text(f'{photo_reference} {index + 1}/{len(photo_reference_list)}')
+        progres_bar.progress((int(index) + 1) / len(photo_reference_list) * 100)
         get_assets_id(products_list, photo_reference, context)
+    progres_bar.kill_bar()
     return products_list
 
 
