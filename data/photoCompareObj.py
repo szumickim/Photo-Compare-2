@@ -178,7 +178,7 @@ def create_products_collection(df_export, entry_info):
 def find_to_summary_excel(folder_path):
     pattern = "Summary"
     files = os.listdir(folder_path)
-    paths = [os.path.join(folder_path, basename) for basename in files if basename.find(pattern) >= 0]
+    paths = [os.path.join(folder_path, basename) for basename in files if basename.find(pattern) == 0]
     if paths:
         return pd.read_excel(max(paths, key=os.path.getmtime), sheet_name=0, dtype=str)
     else:

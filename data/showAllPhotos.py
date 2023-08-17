@@ -161,15 +161,18 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
         if button_type == ButtonConst.NEXT:
             select_photos(products_list)
         elif button_type == ButtonConst.CLOSE:
+            select_photos(products_list)
             button_action.set(int(button_type))
         elif button_type == ButtonConst.BACK:
             select_photos(products_list)
             button_action.set(int(button_type))
         elif button_type == ButtonConst.GO_TO:
             global next_product_id
+            select_photos(products_list)
             next_product_id = go_to_text_box.get("1.0", "end-1c")
             button_action.set(int(button_type))
         elif button_type == ButtonConst.DOWNLOAD:
+            select_photos(products_list)
             button_action.set(int(button_type))
         root.quit()
         root.destroy()
