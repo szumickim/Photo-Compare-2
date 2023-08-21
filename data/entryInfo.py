@@ -3,7 +3,7 @@ import pandas as pd
 ALL_IMAGES: str = "Show all images"
 
 class EntryInfo:
-    def __init__(self, program_type=None, elements_in_show_all=20, excel_path='', photo_path='', live_preview=False, continue_work=False, resize_photo=False, data_from_step=False):
+    def __init__(self, program_type=None, elements_in_show_all=3, excel_path='', photo_path='', live_preview=False, continue_work=False, resize_photo=False, data_from_step=False):
         self.excel_path = excel_path
         self.photo_path = photo_path
         self.live_preview = live_preview
@@ -15,6 +15,8 @@ class EntryInfo:
         self.references_dict = dict()
         self.pim_id_list: list = []
         self.gather_data_before_start: bool = True
+        self.step_login = ''
+        self.step_password = ''
 
         if self.program_type == ALL_IMAGES:
             self.resize_photo = None

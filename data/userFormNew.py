@@ -104,26 +104,36 @@ class UserForm:
         clear_frame(self.root)
         border = ttk.LabelFrame(self.root, border=0, width=self.screen_width, height=self.screen_height)
 
-        configue_borders(border, 3, 3)
+        configue_borders(border, 5, 3)
+
+        login_label = tk.Label(border, text="Login", relief="groove")
+        login_label.grid(row=0, column=0, sticky=tk.NSEW, ipadx=self.buttons_width)
+        self.entry_info.step_login = tk.Entry(border)
+        self.entry_info.step_login.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
+
+        password_label = tk.Label(border, text="Password", relief="groove")
+        password_label.grid(row=1, column=0, sticky=tk.NSEW, ipadx=self.buttons_width)
+        self.entry_info.step_password = tk.Entry(border, show="*")
+        self.entry_info.step_password.grid(row=1, column=1, columnspan=3, sticky=tk.NSEW)
 
         excel_path_label = tk.Label(border, text="", width=32, relief="groove")
-        excel_path_label.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
+        excel_path_label.grid(row=2, column=1, columnspan=3, sticky=tk.NSEW, ipadx=self.buttons_width)
         excel_button = tk.Button(border, text="Select Excel with product list",
                                 command=lambda: self.select_excel_path(excel_path_label, EXCEL_PATH))
-        excel_button.grid(row=0, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
+        excel_button.grid(row=2, column=0, sticky=tk.NSEW)
 
         step_references_label = tk.Label(border, text="", width=32, relief="groove")
-        step_references_label.grid(row=1, column=1, columnspan=3, sticky=tk.NSEW)
+        step_references_label.grid(row=3, column=1, columnspan=3, sticky=tk.NSEW)
         references_button = tk.Button(border, text="Select references",
                                       command=lambda: self.references_window(step_references_label))
-        references_button.grid(row=1, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
+        references_button.grid(row=3, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
-        tk.Label(border, text="Number of elements in show all: ").grid(row=2, column=0, sticky=tk.NSEW)
+        tk.Label(border, text="Number of elements in show all: ").grid(row=4, column=0, sticky=tk.NSEW)
         self.entry_info.elements_on_screen = tk.Entry(border, width=2, justify='center')
         self.entry_info.elements_on_screen.insert(0, "3")
-        self.entry_info.elements_on_screen.grid(row=2, column=1, sticky=tk.W)
+        self.entry_info.elements_on_screen.grid(row=4, column=1, sticky=tk.W)
 
-        tk.Label(border, text="Gather all images before start: ").grid(row=3, column=0, sticky=tk.NSEW)
+        tk.Label(border, text="Gather all images before start: ").grid(row=5, column=0, sticky=tk.NSEW)
         on_img = ImageTk.PhotoImage(Image.open('data/images/on.png'))
         off_img = ImageTk.PhotoImage(Image.open('data/images/off.png'))
 
@@ -138,11 +148,11 @@ class UserForm:
         button_on_off = tk.Button(border, image=on_img,
                                 command= switch_on_off_button, bd=0)
 
-        button_on_off.grid(row=3, column=1, sticky=tk.W)
+        button_on_off.grid(row=5, column=1, sticky=tk.W)
 
         menu_frame = ttk.LabelFrame(border)
         self.menu_label(menu_frame, back_to_menu=False)
-        menu_frame.grid(row=4, column=0, columnspan=3, sticky=tk.NSEW)
+        menu_frame.grid(row=6, column=0, columnspan=3, sticky=tk.NSEW)
 
         border.pack(fill='both', expand=True)
 
@@ -274,6 +284,8 @@ class UserForm:
             self.entry_info.convert_elements_in_show_all()
 
         if self.entry_info.data_from_step:
+            self.entry_info.step_password = self.entry_info.step_password.get()
+            self.entry_info.step_login = self.entry_info.step_login.get()
             self.entry_info.remove_unused_references_from_dict()
             self.entry_info.add_pim_id_list()
         self.open_menu()
