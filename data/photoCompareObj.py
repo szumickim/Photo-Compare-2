@@ -21,10 +21,9 @@ def main(entry_info: EntryInfo):
 
     if entry_info.data_from_step:
         photo_reference_list = list(entry_info.references_dict.keys())
-        context = 'en-GL'
         products_collection = create_products_objects(entry_info.pim_id_list)
         if entry_info.gather_data_before_start:
-            products_collection = create_product_collection_from_step(products_collection, photo_reference_list, context)
+            products_collection = create_product_collection_from_step(products_collection, photo_reference_list, entry_info)
 
         first_row = 0
     else:

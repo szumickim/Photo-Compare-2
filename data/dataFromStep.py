@@ -18,14 +18,14 @@ FIND_ID_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/products' 
 GET_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/assets' # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
 
 
-def create_product_collection_from_step(products_list, photo_reference_list, context):
+def create_product_collection_from_step(products_list, photo_reference_list, entry_info):
     progres_bar = progressBar.ClsProgress(tk.Toplevel())
     progres_bar.add_counter()
     progres_bar.window_always_on_top()
     for index, photo_reference in enumerate(photo_reference_list):
         progres_bar.change_counter_label_text(f'{photo_reference} {index + 1}/{len(photo_reference_list)}')
         progres_bar.progress((int(index) + 1) / len(photo_reference_list) * 100)
-        get_assets_id(products_list, photo_reference, context)
+        get_assets_id(products_list, photo_reference, entry_info)
     progres_bar.kill_bar()
     return products_list
 
@@ -34,14 +34,14 @@ def create_products_objects(pim_id_list):
     return [ProductStep(pim_id) for pim_id in pim_id_list]
 
 
-def get_assets_id(products_list, photo_reference, context):
+def get_assets_id(products_list, photo_reference,entry_info):
 
     # Semaphore to limit the number of parallel downloads
     semaphore = threading.Semaphore(4)
     # create a list of threads
     threads = []
     for index, product in enumerate(products_list):
-        t = threading.Thread(target=get_asset_id_mutli, args=(semaphore, product, photo_reference, context))
+        t = threading.Thread(target=get_asset_id_mutli, args=(semaphore, product, photo_reference, entry_info))
         threads.append(t)
         t.start()
 
@@ -50,25 +50,25 @@ def get_assets_id(products_list, photo_reference, context):
         t.join()
 
 
-def get_asset_id_mutli(semaphore, product, photo_reference, context):
+def get_asset_id_mutli(semaphore, product, photo_reference, entry_info):
     """Download a file from the given url"""
     try:
         with semaphore:
-            url_asset = f'{FIND_ID_ASSETS_URL}/{product.product_id}/references/{photo_reference}?context={context}&workspace=Main'
+            url_asset = f'{FIND_ID_ASSETS_URL}/{product.product_id}/references/{photo_reference}?context=en-GL&workspace=Main'
             url_asset = url_asset.replace(" ", "%20")
             response = requests.get(url_asset,
-                                    auth=HTTPBasicAuth(LOGIN, PASSWORD), verify=False)
+                                    auth=HTTPBasicAuth(entry_info.step_login, entry_info.step_password), verify=False)
             asset_info = json.loads(response.content.decode("UTF-8"))
-            gather_data(asset_info, product, photo_reference)
+            gather_data(asset_info, product, photo_reference, entry_info)
     except Exception as e:
         print(f"Failed to download: {e}")
 
 
-def gather_data(assets_dict, product, photo_reference):
+def gather_data(assets_dict, product, photo_reference, entry_info):
     if assets_dict.get("references"):  # jeżeli jest więcej niż 1 zdjęcie
         for assets in assets_dict.get("references"):
             try:
-                response = get_assets(assets.get("target"))
+                response = get_assets(assets.get("target"), entry_info)
                 asset_info = Image.open(io.BytesIO(response.content))
                 photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
                 product.all_photos.append(photo_object)
@@ -77,7 +77,7 @@ def gather_data(assets_dict, product, photo_reference):
     elif assets_dict.get("reference"):  # jeżeli jest tylko 1 zdjęcie
         try:
             assets = assets_dict.get("reference")
-            response = get_assets(assets.get("target"))
+            response = get_assets(assets.get("target"), entry_info)
             asset_info = Image.open(io.BytesIO(response.content))
             photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
             product.all_photos.append(photo_object)
@@ -85,11 +85,11 @@ def gather_data(assets_dict, product, photo_reference):
             pass
 
 
-def get_assets(asset_id):
+def get_assets(asset_id, entry_info):
     url_asset = f'{GET_ASSETS_URL}/{asset_id}/content?context=en-GL&workspace=Main'
     try:
         response = requests.get(url_asset,
-                                auth=HTTPBasicAuth(LOGIN, PASSWORD), verify=False, stream=True)
+                                auth=HTTPBasicAuth(entry_info.step_login, entry_info.step_password), verify=False, stream=True)
     except:
         return None
     else:
