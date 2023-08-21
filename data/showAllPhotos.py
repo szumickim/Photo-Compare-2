@@ -24,7 +24,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
 
     # Create A Main frame
     main_frame = tk.Frame(root)
-    main_frame.pack(fill=tk.BOTH, expand=1)
+    main_frame.pack(fill=tk.BOTH, expand=1, side=tk.LEFT)
 
     # Create A Canvas
     my_canvas = tk.Canvas(main_frame)
@@ -45,9 +45,6 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
     counter = 0
     products_list = create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()), "en-GL") \
         if entry_info.data_from_step and not entry_info.gather_data_before_start else products_list
-
-    if entry_info.data_from_step:
-        products_list[0].download_selected()
 
     for product in products_list:
 
@@ -139,16 +136,18 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
                     photo.selected_photo = False
 
     # #####################Right site of frame#########################
-
+    right_frame = tk.Frame(root)
     # Progress bar
-    progress = ClsProgress(ttk.Frame(root))
+    progress_frame = tk.Frame(right_frame)
+    progress = ClsProgress(progress_frame)
     progress.add_counter()
     progress.progress(progress_counter.get("current")/progress_counter.get("all")*100)
     if progress_counter.get("current") >= progress_counter.get("all"):
         progress.change_counter_label_text(f"{progress_counter.get('all')}/{progress_counter.get('all')}")
     else:
         progress.change_counter_label_text(f"{progress_counter.get('current')}/{progress_counter.get('all')}")
-    progress.root.place(x=LAST_COLUMN_POSITION, y=10)
+    # progress.root.place(x=LAST_COLUMN_POSITION, y=10)
+    progress_frame.grid(row=0, column=MAX_IMAGES_IN_LINE)
 
     # Buttons and functions
     button_action = tk.IntVar()
@@ -180,39 +179,46 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
 
     # Next button
     if progress_counter.get('current') >= progress_counter.get('all'):
-        button_next = tk.Button(root, text="Finish", command=lambda: buttons_function(ButtonConst.NEXT), width=30,
+        button_next = tk.Button(right_frame, text="Finish", command=lambda: buttons_function(ButtonConst.NEXT), width=30,
                                 height=5)
     else:
-        button_next = tk.Button(root, text="Next", command=lambda: buttons_function(ButtonConst.NEXT), width=30, height=5)
-    button_next.place(x=LAST_COLUMN_POSITION, y=50)
+        button_next = tk.Button(right_frame, text="Next", command=lambda: buttons_function(ButtonConst.NEXT), width=30, height=5)
+    # button_next.place(x=LAST_COLUMN_POSITION, y=50)
+    button_next.grid(row=1, column=MAX_IMAGES_IN_LINE)
     root.bind('<Right>', lambda event: buttons_function(1))
 
-    # Close button
-    close_button = tk.Button(root, text="Close", command=lambda: buttons_function(ButtonConst.CLOSE), width=30, height=5)
-    close_button.place(x=LAST_COLUMN_POSITION, y=250)
-
     # Back button
-    back_button = tk.Button(root, text="Back", command=lambda: buttons_function(ButtonConst.BACK), width=30, height=5)
-    back_button.place(x=LAST_COLUMN_POSITION, y=150)
+    back_button = tk.Button(right_frame, text="Back", command=lambda: buttons_function(ButtonConst.BACK), width=30, height=5)
+    back_button.grid(row=2, column=MAX_IMAGES_IN_LINE)
+    # back_button.place(x=LAST_COLUMN_POSITION, y=150)
     if progress_counter.get("first") == 0:
         back_button['state'] = "disable"
     else:
         root.bind('<Left>', lambda event: buttons_function(ButtonConst.BACK))
 
+    # Close button
+    close_button = tk.Button(right_frame, text="Close", command=lambda: buttons_function(ButtonConst.CLOSE), width=30, height=5)
+    close_button.grid(row=3, column=MAX_IMAGES_IN_LINE)
+    # close_button.place(x=LAST_COLUMN_POSITION, y=250)
+
     # GoTo button
-    go_to_label = tk.Label(root, text=f"Go to:")
-    go_to_label.place(x=LAST_COLUMN_POSITION, y=350)
+    go_to_label = tk.Label(right_frame, text=f"Go to:")
+    # go_to_label.place(x=LAST_COLUMN_POSITION, y=350)
+    go_to_label.grid(row=4, column=MAX_IMAGES_IN_LINE)
 
-    go_to_text_box = tk.Text(root, height=1, width=25)
-    go_to_text_box.place(x=LAST_COLUMN_POSITION, y=370)
+    go_to_text_box = tk.Text(right_frame, height=1, width=25)
+    # go_to_text_box.place(x=LAST_COLUMN_POSITION, y=370)
+    go_to_text_box.grid(row=5, column=MAX_IMAGES_IN_LINE)
 
-    go_to_button = tk.Button(root, text="Go To", command=lambda: buttons_function(ButtonConst.GO_TO), width=30, height=5)
-    go_to_button.place(x=LAST_COLUMN_POSITION, y=410)
+    go_to_button = tk.Button(right_frame, text="Go To", command=lambda: buttons_function(ButtonConst.GO_TO), width=30, height=5)
+    # go_to_button.place(x=LAST_COLUMN_POSITION, y=410)
+    go_to_button.grid(row=6, column=MAX_IMAGES_IN_LINE)
 
     if entry_info.data_from_step:
-        close_and_download_button = tk.Button(root, text="Close and download selected", command=lambda: buttons_function(ButtonConst.DOWNLOAD), width=30, height=5)
-        close_and_download_button.place(x=LAST_COLUMN_POSITION, y=500)
-
+        close_and_download_button = tk.Button(right_frame, text="Close and download selected", command=lambda: buttons_function(ButtonConst.DOWNLOAD), width=30, height=5)
+        # close_and_download_button.place(x=LAST_COLUMN_POSITION, y=500)
+        close_and_download_button.grid(row=7, column=MAX_IMAGES_IN_LINE)
+    right_frame.pack(fill=tk.BOTH, expand=1)
     # Closing by 'X' warning
     def on_closing():
         if messagebox.askokcancel("Quit", "Do you want to quit?"):

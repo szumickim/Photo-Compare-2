@@ -143,7 +143,7 @@ def compare_images_loop(product: Product, entry_info: EntryInfo, continue_progra
 
 def go_to_product(products_collection, next_product_id):
     for count, prod in enumerate(products_collection):
-        if getattr(prod, '<ID>') == next_product_id.strip():
+        if prod.product_id == next_product_id.strip():
             return count
     return -1
 
