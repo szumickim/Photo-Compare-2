@@ -6,6 +6,8 @@ from tkinter.filedialog import askdirectory
 import photoCompareObj
 from constants import *
 from PIL import ImageTk, Image
+import csv
+
 
 TAG_TO_DELETE_KEY: str = 'To delete'
 BME_CAT_DICT_KEY: str = 'BME_CAT'
@@ -149,11 +151,15 @@ class UserForm:
         master = tk.Toplevel()
         # ##################### CheckButtons ##############################
 
-        references_list = ['Product Image', 'Product Image further', 'BMEcat_MIME_INFO_safety_data_sheet',
-                           'BMEcat_MIME_INFO_deep_link_data_sheet', 'BMEcat_MIME_INFO_deep_link_reach_data_sheet',
-                           'Energy label', 'Circuit Diagram', 'MeasurementDrawing', 'Symbol',
-                           'BMEcat_MIME_INFO_user_manual', 'Light Distribution Curve', 'EnvironmentImage',
-                           'MIME_INFO_federation_link', 'BMEcat_MIME_INFO_FDV']
+        # references_list = ['Product Image', 'Product Image further', 'BMEcat_MIME_INFO_safety_data_sheet',
+        #                    'BMEcat_MIME_INFO_deep_link_data_sheet', 'BMEcat_MIME_INFO_deep_link_reach_data_sheet',
+        #                    'Energy label', 'Circuit Diagram', 'MeasurementDrawing', 'Symbol',
+        #                    'BMEcat_MIME_INFO_user_manual', 'Light Distribution Curve', 'EnvironmentImage',
+        #                    'MIME_INFO_federation_link', 'BMEcat_MIME_INFO_FDV']
+        with open('data/references/image_ids.csv', 'r') as f:
+            references_list = csv.reader(f, delimiter=';')
+            references_list = list(references_list)[0]
+
 
         references_label = tk.Label(master)
         for reference_name in references_list:

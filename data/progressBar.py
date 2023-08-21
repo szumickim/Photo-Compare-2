@@ -3,7 +3,7 @@ import tkinter as tk
 
 
 class ClsProgress():
-    def __init__(self, master):
+    def __init__(self, master, pack=True, row=0, column=0):
         # root window
         self.root = master
 
@@ -14,7 +14,6 @@ class ClsProgress():
             mode='determinate',
             length=250
         )
-
         self.bar.pack()
 
     def window_always_on_top(self):
