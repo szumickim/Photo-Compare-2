@@ -28,7 +28,7 @@ class Product(ProductBasics):
         self.all_photos = list(itertools.chain.from_iterable(self.all_photos))
 
         for photo in self.all_photos:
-            if photo.asset_type.find('Primary') != -1:
+            if photo.asset_type.lower().find('primary') != -1:
                 self.all_photos.remove(photo)
                 self.all_photos.insert(0, photo)
 
