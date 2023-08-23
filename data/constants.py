@@ -19,3 +19,5 @@ PRODUCTS_ON_SCREEN: int = 3
 
 SHOW_ALL_SUMMARY_FORMAT: int = 1
 SUMMARY_FORMAT: int = 2
+
+POPPLER_PATH = r"C:\poppler-23.05.0\Library\bin"

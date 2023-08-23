@@ -21,8 +21,8 @@ PROGRAM_BME_TO_EXCEL: str = 'BME2EXCEL'
 class UserForm:
     def __init__(self):
         self.run: bool = False
-        self.screen_width = 400
-        self.screen_height = 200
+        self.screen_width = 500
+        self.screen_height = 400
         self.root = tk.Tk()
         self.root.iconbitmap('data/images/icon.ico')
         self.root.geometry(f'{self.screen_width}x{self.screen_height}')
@@ -104,7 +104,7 @@ class UserForm:
         clear_frame(self.root)
         border = ttk.LabelFrame(self.root, border=0, width=self.screen_width, height=self.screen_height)
 
-        configue_borders(border, 5, 3)
+        configue_borders(border, 6, 3)
 
         login_label = tk.Label(border, text="Login", relief="groove")
         login_label.grid(row=0, column=0, sticky=tk.NSEW, ipadx=self.buttons_width)
@@ -124,16 +124,23 @@ class UserForm:
 
         step_references_label = tk.Label(border, text="", width=32, relief="groove")
         step_references_label.grid(row=3, column=1, columnspan=3, sticky=tk.NSEW)
-        references_button = tk.Button(border, text="Select references",
-                                      command=lambda: self.references_window(step_references_label))
+        references_button = tk.Button(border, text="Select Images References",
+                                      command=lambda: self.references_window(step_references_label, 'image_ids'))
         references_button.grid(row=3, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
 
-        tk.Label(border, text="Number of elements in show all: ").grid(row=4, column=0, sticky=tk.NSEW)
+        step_pdfs_label = tk.Label(border, text="", width=32, relief="groove")
+        step_pdfs_label.grid(row=4, column=1, columnspan=3, sticky=tk.NSEW)
+        pdfs_button = tk.Button(border, text="Select Documents References",
+                                      command=lambda: self.references_window(step_pdfs_label, 'pdf_ids'))
+        pdfs_button.grid(row=4, column=0, ipadx=self.buttons_width, sticky=tk.NSEW)
+
+
+        tk.Label(border, text="Number of elements in show all: ").grid(row=5, column=0, sticky=tk.NSEW)
         self.entry_info.elements_on_screen = tk.Entry(border, width=2, justify='center')
         self.entry_info.elements_on_screen.insert(0, "3")
-        self.entry_info.elements_on_screen.grid(row=4, column=1, sticky=tk.W)
+        self.entry_info.elements_on_screen.grid(row=5, column=1, sticky=tk.W)
 
-        tk.Label(border, text="Gather all images before start: ").grid(row=5, column=0, sticky=tk.NSEW)
+        tk.Label(border, text="Gather all images before start: ").grid(row=6, column=0, sticky=tk.NSEW)
         on_img = ImageTk.PhotoImage(Image.open('data/images/on.png'))
         off_img = ImageTk.PhotoImage(Image.open('data/images/off.png'))
 
@@ -148,25 +155,20 @@ class UserForm:
         button_on_off = tk.Button(border, image=on_img,
                                 command= switch_on_off_button, bd=0)
 
-        button_on_off.grid(row=5, column=1, sticky=tk.W)
+        button_on_off.grid(row=6, column=1, sticky=tk.W)
 
         menu_frame = ttk.LabelFrame(border)
         self.menu_label(menu_frame, back_to_menu=False)
-        menu_frame.grid(row=6, column=0, columnspan=3, sticky=tk.NSEW)
+        menu_frame.grid(row=7, column=0, columnspan=3, sticky=tk.NSEW)
 
         border.pack(fill='both', expand=True)
 
 
-    def references_window(self, step_references_label):
+    def references_window(self, step_references_label, csv_name):
         master = tk.Toplevel()
         # ##################### CheckButtons ##############################
 
-        # references_list = ['Product Image', 'Product Image further', 'BMEcat_MIME_INFO_safety_data_sheet',
-        #                    'BMEcat_MIME_INFO_deep_link_data_sheet', 'BMEcat_MIME_INFO_deep_link_reach_data_sheet',
-        #                    'Energy label', 'Circuit Diagram', 'MeasurementDrawing', 'Symbol',
-        #                    'BMEcat_MIME_INFO_user_manual', 'Light Distribution Curve', 'EnvironmentImage',
-        #                    'MIME_INFO_federation_link', 'BMEcat_MIME_INFO_FDV']
-        with open('data/references/image_ids.csv', 'r') as f:
+        with open(f'data/references/{csv_name}.csv', 'r') as f:
             references_list = csv.reader(f, delimiter=';')
             references_list = list(references_list)[0]
 
@@ -193,7 +195,8 @@ class UserForm:
         step_references_label.configure(background="lightgreen", text="Selected")
 
         for k, v in self.entry_info.references_dict.items():
-            self.entry_info.references_dict[k] = v.get()
+            if isinstance(v, tk.BooleanVar):
+                self.entry_info.references_dict[k] = v.get()
         master.destroy()
 
     def compare_window(self):
