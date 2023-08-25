@@ -15,6 +15,7 @@ class EntryInfo:
         self.references_dict = dict()
         self.pim_id_list: list = []
         self.gather_data_before_start: bool = True
+        self.assets_context: str = "en-GL"
         self.step_login = ''
         self.step_password = ''
 

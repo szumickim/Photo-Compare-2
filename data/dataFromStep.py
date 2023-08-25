@@ -108,18 +108,3 @@ def get_assets(asset_id, entry_info):
     else:
         return response
 
-if __name__ == "__main__":
-    pdf_file = Path(r"Scorecard SCHNEIDER Poland Onninen 03.06.2022.pdf")
-
-    url_asset = f'{GET_ASSETS_URL}/PROD_20000_0732771/content?context=en-GL&workspace=Main'
-    try:
-        response = requests.get(url_asset,
-                                auth=HTTPBasicAuth(LOGIN, PASSWORD), verify=False, stream=True)
-    except Exception as e:
-        print(e)
-
-
-    pages2 = convert_from_bytes(response.content, poppler_path=Path(POPPLER_PATH))
-    pages2[0].show()
-
-

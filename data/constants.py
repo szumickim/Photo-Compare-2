@@ -21,3 +21,10 @@ SHOW_ALL_SUMMARY_FORMAT: int = 1
 SUMMARY_FORMAT: int = 2
 
 POPPLER_PATH = r"C:\poppler-23.05.0\Library\bin"
+
+TAG_TO_DELETE_KEY: str = 'To delete'
+BME_CAT_DICT_KEY: str = 'BME_CAT'
+EXCEL_DICT_KEY: str = 'Excel'
+PROGRAM_DELETE_TAG: str = 'Delete'
+PROGRAM_MFPNR: str = 'MFPNR'
+PROGRAM_BME_TO_EXCEL: str = 'BME2EXCEL'
