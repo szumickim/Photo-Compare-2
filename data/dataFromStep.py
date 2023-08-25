@@ -9,7 +9,9 @@ import threading
 import warnings
 import progressBar
 import tkinter as tk
-
+from pdf2image import convert_from_path, convert_from_bytes
+from pathlib import Path
+from constants import *
 
 warnings.filterwarnings('ignore')
 LOGIN = 'SZUMIMIC'
@@ -34,7 +36,7 @@ def create_products_objects(pim_id_list):
     return [ProductStep(pim_id) for pim_id in pim_id_list]
 
 
-def get_assets_id(products_list, photo_reference,entry_info):
+def get_assets_id(products_list, photo_reference, entry_info):
 
     # Semaphore to limit the number of parallel downloads
     semaphore = threading.Semaphore(4)
@@ -60,6 +62,7 @@ def get_asset_id_mutli(semaphore, product, photo_reference, entry_info):
                                     auth=HTTPBasicAuth(entry_info.step_login, entry_info.step_password), verify=False)
             asset_info = json.loads(response.content.decode("UTF-8"))
             gather_data(asset_info, product, photo_reference, entry_info)
+            print(product.product_id, photo_reference)
     except Exception as e:
         print(f"Failed to download: {e}")
 
@@ -69,20 +72,30 @@ def gather_data(assets_dict, product, photo_reference, entry_info):
         for assets in assets_dict.get("references"):
             try:
                 response = get_assets(assets.get("target"), entry_info)
-                asset_info = Image.open(io.BytesIO(response.content))
+
+                asset_info = get_asset_info(response)
+
                 photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
                 product.all_photos.append(photo_object)
-            except:
-                pass
+            except Exception as e:
+                print(f'Response error: {e}')
     elif assets_dict.get("reference"):  # jeżeli jest tylko 1 zdjęcie
         try:
             assets = assets_dict.get("reference")
             response = get_assets(assets.get("target"), entry_info)
-            asset_info = Image.open(io.BytesIO(response.content))
+
+            asset_info = get_asset_info(response)
+
             photo_object = PhotoStep(asset_info, assets.get("target"), photo_reference)
             product.all_photos.append(photo_object)
-        except:
-            pass
+        except Exception as e:
+            print(f'Response error: {e}')
+
+def get_asset_info(response):
+    if response.headers.get("Content-Type").find("image") >= 0:
+        return Image.open(io.BytesIO(response.content))
+    elif response.headers.get("Content-Type").find("pdf") >= 0:
+        return convert_from_bytes(response.content, poppler_path=Path(POPPLER_PATH))[0]
 
 
 def get_assets(asset_id, entry_info):
@@ -94,9 +107,4 @@ def get_assets(asset_id, entry_info):
         return None
     else:
         return response
-
-
-
-
-
 
