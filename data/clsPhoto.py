@@ -9,7 +9,7 @@ class PhotoBasics:
         self.selected_photo = False
         self.validated = False
         self.worse = False
-
+        self.extension: str
 
 class Photo(PhotoBasics):
     def __init__(self, name, photo_height, photo_width, asset_type):
