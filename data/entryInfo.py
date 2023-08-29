@@ -33,6 +33,9 @@ class EntryInfo:
     def convert_elements_in_show_all(self):
         self.elements_on_screen = int(self.elements_on_screen.get())
 
+    def convert_context(self):
+        self.assets_context = str(self.assets_context.get())
+
     def remove_unused_references_from_dict(self):
         self.references_dict = {k: v for k, v in self.references_dict.items() if v == True}
 

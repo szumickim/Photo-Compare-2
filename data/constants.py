@@ -28,3 +28,7 @@ EXCEL_DICT_KEY: str = 'Excel'
 PROGRAM_DELETE_TAG: str = 'Delete'
 PROGRAM_MFPNR: str = 'MFPNR'
 PROGRAM_BME_TO_EXCEL: str = 'BME2EXCEL'
+
+PDF: str = 'pdf'
+
+SELECTED_PHOTOS: str = 'SelectedPhotos'

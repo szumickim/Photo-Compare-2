@@ -120,12 +120,12 @@ class UserForm:
             self.entry_info.change_button_variable_to_boolean()
         elif self.entry_info.program_type == ALL_IMAGES:
             self.entry_info.convert_elements_in_show_all()
-
         if self.entry_info.data_from_step:
             self.entry_info.step_password = self.entry_info.step_password.get()
             self.entry_info.step_login = self.entry_info.step_login.get()
             self.entry_info.remove_unused_references_from_dict()
             self.entry_info.add_pim_id_list()
+            self.entry_info.convert_context()
         self.open_menu()
         photoCompareObj.main(self.entry_info)
         tk.messagebox.showinfo(title="Photo Compare", message="Finished!")

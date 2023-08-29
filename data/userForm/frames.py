@@ -26,9 +26,11 @@ def step_all_photos_window(user_form):
 
     _add_number_of_elements(user_form=user_form, master=border, row=5)
 
-    _add_gather_data_type(user_form=user_form, master=border, row=6)
+    _add_context(user_form=user_form, master=border, row=6)
 
-    _add_menu(user_form=user_form, master=border, row=7)
+    _add_gather_data_type(user_form=user_form, master=border, row=7)
+
+    _add_menu(user_form=user_form, master=border, row=8)
 
     border.pack(fill='both', expand=True)
 
@@ -135,6 +137,12 @@ def _add_number_of_elements(user_form, master, row):
     user_form.entry_info.elements_on_screen.insert(0, "3")
     user_form.entry_info.elements_on_screen.grid(row=row, column=1, sticky=tk.W)
 
+def _add_context(user_form, master, row):
+    tk.Label(master, text="Add context of assets (aa-AA): ").grid(row=row, column=0, sticky=tk.NSEW)
+    user_form.entry_info.assets_context = tk.Entry(master, width=6, justify='center')
+    user_form.entry_info.assets_context.insert(0, "en-GL")
+    user_form.entry_info.assets_context.grid(row=row, column=1, sticky=tk.W)
+
 
 def _add_gather_data_type(user_form, master, row):
     tk.Label(master, text="Gather all images before start: ").grid(row=row, column=0, sticky=tk.NSEW)
@@ -152,7 +160,7 @@ def _add_gather_data_type(user_form, master, row):
     button_on_off = tk.Button(master, image=on_img,
                               command=_switch_on_off_button, bd=0)
 
-    button_on_off.grid(row=6, column=1, sticky=tk.W)
+    button_on_off.grid(row=row, column=1, sticky=tk.W)
 
 
 def _add_menu(user_form, master, row, back_to_menu=False):
