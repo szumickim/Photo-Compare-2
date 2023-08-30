@@ -88,6 +88,7 @@ def main(entry_info: EntryInfo):
 
     elif entry_info.program_type == ALL_IMAGES:
         work_with_show_all_summ_excel(products_collection, entry_info.photo_path)
+        delete_backup(entry_info.photo_path)
 
     if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
         download_module(products_collection, entry_info)
@@ -96,6 +97,11 @@ def main(entry_info: EntryInfo):
         if messagebox.askokcancel("Delete folder", "Do you want to delete folder with all asstes?"):
             shutil.rmtree(f'{TEMP_ASSETS_FROM_STEP_FOLDER}')
 
+
+def delete_backup(folder_path):
+    backup_path = f"{folder_path}/Backup{set_today_date('-')}.xlsx"
+    if os.path.exists(backup_path):
+        os.remove(backup_path)
 
 def gather_data_from_step_by_swagger(entry_info):
     photo_reference_list = list(entry_info.references_dict.keys())
