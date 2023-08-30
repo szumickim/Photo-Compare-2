@@ -4,6 +4,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 from PIL import Image
+import glob
 import io
 import os
 import threading
@@ -74,6 +75,12 @@ def gather_data(semaphore, product, photo_reference, entry_info):
 
 
 def create_object_from_swagger(asset, product, photo_reference, entry_info):
+    if is_asset_already_downloaded(asset.get("target"), entry_info):
+        photo_object = PhotoStep(asset.get("target"), photo_reference)
+        photo_object.extension = glob.glob(f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{asset.get('target')}.*")[0].split(".")[-1]
+        product.all_photos.append(photo_object)
+        return
+
     try:
         response = get_assets(asset.get("target"), entry_info)
 
@@ -89,6 +96,13 @@ def create_object_from_swagger(asset, product, photo_reference, entry_info):
         product.all_photos.append(photo_object)
     except Exception as e:
         print(f'Response error: {e}')
+
+
+def is_asset_already_downloaded(asset_name, entry_info):
+    if not entry_info.download_data_before_start:
+        return False
+    if glob.glob(f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{asset_name}.*"):
+        return True
 
 
 def get_asset_data(assets_dict, product, photo_reference, entry_info):
