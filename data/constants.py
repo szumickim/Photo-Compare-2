@@ -32,3 +32,4 @@ PROGRAM_BME_TO_EXCEL: str = 'BME2EXCEL'
 PDF: str = 'pdf'
 
 SELECTED_PHOTOS: str = 'SelectedPhotos'
+TEMP_ASSETS_FROM_STEP_FOLDER: str = 'AssetsFromStep'
