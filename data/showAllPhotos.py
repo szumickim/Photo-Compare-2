@@ -5,9 +5,11 @@ from consts import ButtonConst
 from progressBar import ClsProgress
 from tkinter import messagebox
 from dataFromStep import create_product_collection_from_step
+from constants import *
+from pdf2image import convert_from_path
+from pathlib import Path
+
 global next_product_id
-
-
 
 def show_all_photos(products_list, photo_path, progress_counter: dict, entry_info):
     IMAGE_WIDTH: int = 200
@@ -43,7 +45,8 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
     photos_names_dict = {}
     image_list = []
     counter = 0
-    products_list = create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()), entry_info) \
+    products_list = create_product_collection_from_step(products_list, list(entry_info.references_dict.keys()),
+                                                        entry_info) \
         if entry_info.data_from_step and not entry_info.gather_data_before_start else products_list
 
     for product in products_list:
@@ -55,7 +58,12 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
         product_name.config(state='disabled')
 
         for photo in product.all_photos:
-            image = photo.asset_data if entry_info.data_from_step else Image.open(f"{photo_path}/{photo.name}")
+            if entry_info.data_from_step and not entry_info.download_data_before_start:
+                image = photo.asset_data
+            elif entry_info.download_data_before_start:
+                image = get_image(photo)
+            else:
+                image = Image.open(f"{photo_path}/{photo.name}")
             image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
             my_img = ImageTk.PhotoImage(image)
             image_list.append(my_img)
@@ -68,16 +76,17 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
 
         for i, photo in enumerate(product.all_photos):
 
-            dict_key =f"{product.product_id};{photo.name}"
+            dict_key = f"{product.product_id};{photo.name}"
 
             # tk.Label(second_frame, image=image_list[i + counter]).grid(row=y_position + 1, column=x_position, pady=1, padx=10)
 
             # Nazwa referencji
-            tk.Label(second_frame, text=f"{photo.asset_type[:35]}").grid(row=y_position + 2, column=x_position, pady=1, padx=10)
+            tk.Label(second_frame, text=f"{photo.asset_type[:35]}").grid(row=y_position + 2, column=x_position, pady=1,
+                                                                         padx=10)
 
             # Rozmiary
-            tk.Label(second_frame, text=f"W: {photo.width}/ H:{photo.height}").grid(row=y_position + 3, column=x_position, pady=1, padx=10)
-
+            tk.Label(second_frame, text=f"W: {photo.width}/ H:{photo.height}").grid(row=y_position + 3,
+                                                                                    column=x_position, pady=1, padx=10)
 
             # Set the text for each checkbutton
             photos_names_dict[dict_key] = tk.Checkbutton(second_frame, text=photo.name)
@@ -96,13 +105,16 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
             photos_names_dict[dict_key].grid(row=y_position + 4, column=x_position, pady=10, padx=10)
 
             if photo.validated:
-                tk.Button(second_frame, image=image_list[i + counter], bg='yellow', command=lambda x=photos_names_dict[dict_key]: click_check_box(x)).grid(
+                tk.Button(second_frame, image=image_list[i + counter], bg='yellow',
+                          command=lambda x=photos_names_dict[dict_key]: click_check_box(x)).grid(
                     row=y_position + 1, column=x_position, pady=1, padx=10)
             elif photo.worse:
-                tk.Button(second_frame, image=image_list[i + counter], bg='red', command=lambda x=photos_names_dict[dict_key]: click_check_box(x)).grid(
+                tk.Button(second_frame, image=image_list[i + counter], bg='red',
+                          command=lambda x=photos_names_dict[dict_key]: click_check_box(x)).grid(
                     row=y_position + 1, column=x_position, pady=1, padx=10)
             else:
-                tk.Button(second_frame, image=image_list[i + counter], command=lambda x=photos_names_dict[dict_key]: click_check_box(x)).grid(
+                tk.Button(second_frame, image=image_list[i + counter],
+                          command=lambda x=photos_names_dict[dict_key]: click_check_box(x)).grid(
                     row=y_position + 1, column=x_position, pady=1, padx=10)
             x_position += 1
             if x_position >= MAX_IMAGES_IN_LINE:
@@ -141,7 +153,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
     progress_frame = tk.Frame(right_frame)
     progress = ClsProgress(progress_frame)
     progress.add_counter()
-    progress.progress(progress_counter.get("current")/progress_counter.get("all")*100)
+    progress.progress(progress_counter.get("current") / progress_counter.get("all") * 100)
     if progress_counter.get("current") >= progress_counter.get("all"):
         progress.change_counter_label_text(f"{progress_counter.get('all')}/{progress_counter.get('all')}")
     else:
@@ -179,16 +191,19 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
 
     # Next button
     if progress_counter.get('current') >= progress_counter.get('all'):
-        button_next = tk.Button(right_frame, text="Finish", command=lambda: buttons_function(ButtonConst.NEXT), width=30,
+        button_next = tk.Button(right_frame, text="Finish", command=lambda: buttons_function(ButtonConst.NEXT),
+                                width=30,
                                 height=5)
     else:
-        button_next = tk.Button(right_frame, text="Next", command=lambda: buttons_function(ButtonConst.NEXT), width=30, height=5)
+        button_next = tk.Button(right_frame, text="Next", command=lambda: buttons_function(ButtonConst.NEXT), width=30,
+                                height=5)
     # button_next.place(x=LAST_COLUMN_POSITION, y=50)
     button_next.grid(row=1, column=MAX_IMAGES_IN_LINE)
     root.bind('<Right>', lambda event: buttons_function(1))
 
     # Back button
-    back_button = tk.Button(right_frame, text="Back", command=lambda: buttons_function(ButtonConst.BACK), width=30, height=5)
+    back_button = tk.Button(right_frame, text="Back", command=lambda: buttons_function(ButtonConst.BACK), width=30,
+                            height=5)
     back_button.grid(row=2, column=MAX_IMAGES_IN_LINE)
     # back_button.place(x=LAST_COLUMN_POSITION, y=150)
     if progress_counter.get("first") == 0:
@@ -197,7 +212,8 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
         root.bind('<Left>', lambda event: buttons_function(ButtonConst.BACK))
 
     # Close button
-    close_button = tk.Button(right_frame, text="Close", command=lambda: buttons_function(ButtonConst.CLOSE), width=30, height=5)
+    close_button = tk.Button(right_frame, text="Close", command=lambda: buttons_function(ButtonConst.CLOSE), width=30,
+                             height=5)
     close_button.grid(row=3, column=MAX_IMAGES_IN_LINE)
     # close_button.place(x=LAST_COLUMN_POSITION, y=250)
 
@@ -210,15 +226,19 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
     # go_to_text_box.place(x=LAST_COLUMN_POSITION, y=370)
     go_to_text_box.grid(row=5, column=MAX_IMAGES_IN_LINE)
 
-    go_to_button = tk.Button(right_frame, text="Go To", command=lambda: buttons_function(ButtonConst.GO_TO), width=30, height=5)
+    go_to_button = tk.Button(right_frame, text="Go To", command=lambda: buttons_function(ButtonConst.GO_TO), width=30,
+                             height=5)
     # go_to_button.place(x=LAST_COLUMN_POSITION, y=410)
     go_to_button.grid(row=6, column=MAX_IMAGES_IN_LINE)
 
     if entry_info.data_from_step:
-        close_and_download_button = tk.Button(right_frame, text="Close and download selected", command=lambda: buttons_function(ButtonConst.DOWNLOAD), width=30, height=5)
+        close_and_download_button = tk.Button(right_frame, text="Close and download selected",
+                                              command=lambda: buttons_function(ButtonConst.DOWNLOAD), width=30,
+                                              height=5)
         # close_and_download_button.place(x=LAST_COLUMN_POSITION, y=500)
         close_and_download_button.grid(row=7, column=MAX_IMAGES_IN_LINE)
     right_frame.pack(fill=tk.BOTH, expand=1)
+
     # Closing by 'X' warning
     def on_closing():
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -249,4 +269,15 @@ def add_scroll_bar(main_frame, my_canvas, second_frame):
             my_canvas.yview_scroll(-1, "units")
         else:
             my_canvas.yview_scroll(1, "units")
+
     second_frame.bind("<MouseWheel>", my_callback)
+
+
+def get_image(photo):
+    if photo.extension == PDF:
+        image = convert_from_path(f"{SELECTED_PHOTOS}/{photo.name}.{photo.extension}",
+                                  poppler_path=Path(POPPLER_PATH))[0]
+    else:
+        image = Image.open(
+            f"{SELECTED_PHOTOS}/{photo.name}.{photo.extension}")  # Image.open(f"{photo_path}/{photo.name}")
+    return image

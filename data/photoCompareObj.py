@@ -14,25 +14,18 @@ from showCompareImages import show_image
 from excelWorkspace import *
 from dataFromStep import create_product_collection_from_step
 from dataFromStep import create_products_objects
+from dataFromStep import download_selected
 import progressBar
 from constants import *
 
 def main(entry_info: EntryInfo):
 
+    # tworzenie list obiektów 'ClsProduct'
     if entry_info.data_from_step:
-        photo_reference_list = list(entry_info.references_dict.keys())
-        products_collection = create_products_objects(entry_info.pim_id_list)
-        if entry_info.gather_data_before_start:
-            products_collection = create_product_collection_from_step(products_collection, photo_reference_list, entry_info)
-
+        products_collection = gather_data_from_step_by_swagger(entry_info)
         first_row = 0
     else:
-        # Wczytywanie excela z informacjami o zdjęciach
-        df_export, first_row = read_export(entry_info.excel_path, entry_info.continue_work)
-
-        # tworzenie obiektów 'products'
-        products_collection = create_products_collection(df_export, entry_info)
-
+        products_collection, first_row = create_products_collection(entry_info)
 
     # Inicjowanie progressBaru
     if entry_info.program_type == COMPARE:
@@ -96,11 +89,22 @@ def main(entry_info: EntryInfo):
         work_with_show_all_summ_excel(products_collection, entry_info.photo_path)
 
     if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
-        download_selected(products_collection)
+        download_module(products_collection, entry_info)
 
-def download_selected(products_collection):
+
+def gather_data_from_step_by_swagger(entry_info):
+    photo_reference_list = list(entry_info.references_dict.keys())
+    products_collection = create_products_objects(entry_info.pim_id_list)
+    if entry_info.gather_data_before_start:
+        products_collection = create_product_collection_from_step(products_collection, photo_reference_list, entry_info)
+
+    return products_collection
+
+
+def download_module(products_collection, entry_info):
     for product in products_collection:
-        product.download_selected()
+        download_selected(product, entry_info)
+
 
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
@@ -154,7 +158,10 @@ def get_columns_length(df_export) -> int:
         return len(df_export.columns)
 
 
-def create_products_collection(df_export, entry_info):
+def create_products_collection(entry_info):
+    # Wczytywanie excela z informacjami o zdjęciach
+    df_export, first_row = read_export(entry_info)
+
     df_new = pd.DataFrame(df_export["<ID>"])
 
     columns_length = get_columns_length(df_export)
@@ -171,7 +178,7 @@ def create_products_collection(df_export, entry_info):
     if entry_info.program_type == ALL_IMAGES:
         add_validated_products_to_collection(products_collection, entry_info)
 
-    return products_collection
+    return products_collection, first_row
 
 
 def find_to_summary_excel(folder_path):
@@ -226,12 +233,12 @@ def resize_photos(photo_path):
     return photo_path
 
 
-def read_export(excel_path, continue_work):
-    df = pd.read_excel(excel_path, sheet_name=0, dtype=str)
+def read_export(entry_info):
+    df = pd.read_excel(entry_info.excel_path, sheet_name=0, dtype=str)
 
     # Jeżeli jest wybrana opcja 'continue work' to dane są zaczytywane od ostatniego produktu,
     # którego zdjęcia były porównywane.
-    if continue_work:
+    if entry_info.continue_work:
         blank_row_bool = df.iloc[:, -2].isna()
 
         if len([i for i, x in enumerate(blank_row_bool) if x]) == 0:
