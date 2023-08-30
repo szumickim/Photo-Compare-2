@@ -13,12 +13,12 @@ import tkinter as tk
 from pdf2image import convert_from_bytes
 from pathlib import Path
 from constants import *
-import shutil
+
 warnings.filterwarnings('ignore')
 LOGIN = 'SZUMIMIC'
 PASSWORD = 'step23'
-FIND_ID_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/products' # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
-GET_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/assets' # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
+FIND_ID_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/products'  # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
+GET_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/assets'  # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
 
 
 def create_product_collection_from_step(products_list, photo_reference_list, entry_info):
@@ -38,7 +38,6 @@ def create_products_objects(pim_id_list):
 
 
 def swagger_module(products_list, photo_reference, entry_info):
-
     # Semaphore to limit the number of parallel downloads
     semaphore = threading.Semaphore(4)
     # create a list of threads
@@ -74,10 +73,14 @@ def create_object_from_swagger(asset, product, photo_reference, entry_info):
     try:
         response = get_assets(asset.get("target"), entry_info)
 
-        asset_info = get_asset_info(response)
-
-        photo_object = PhotoStep(asset_info, asset.get("target"), photo_reference)
-        photo_object.extension = PDF if response.headers.get("Content-Type").find("pdf") >= 0 else 'jpg'
+        if entry_info.download_data_before_start:
+            photo_object = PhotoStep(asset.get("target"), photo_reference)
+            photo_object.extension = PDF if response.headers.get("Content-Type").find("pdf") >= 0 else 'jpg'
+            save_asset(photo_object, response)
+        else:
+            asset_data = get_asset_info(response)
+            photo_object = PhotoStep(asset.get("target"), photo_reference, asset_data)
+            photo_object.extension = PDF if response.headers.get("Content-Type").find("pdf") >= 0 else 'jpg'
 
         product.all_photos.append(photo_object)
     except Exception as e:
@@ -89,7 +92,7 @@ def get_asset_data(assets_dict, product, photo_reference, entry_info):
         for asset in assets_dict.get("references"):
             create_object_from_swagger(asset, product, photo_reference, entry_info)
 
-    elif assets_dict.get("reference"):# jeżeli jest tylko 1 zdjęcie
+    elif assets_dict.get("reference"):  # jeżeli jest tylko 1 zdjęcie
         asset = assets_dict.get("reference")
         create_object_from_swagger(asset, product, photo_reference, entry_info)
 
@@ -105,7 +108,8 @@ def get_assets(asset_id, entry_info):
     url_asset = f'{GET_ASSETS_URL}/{asset_id}/content?context={entry_info.assets_context}&workspace=Main'
     try:
         response = requests.get(url_asset,
-                                auth=HTTPBasicAuth(entry_info.step_login, entry_info.step_password), verify=False, stream=True)
+                                auth=HTTPBasicAuth(entry_info.step_login, entry_info.step_password), verify=False,
+                                stream=True)
     except:
         return None
     else:
@@ -123,11 +127,16 @@ def download_selected(product, entry_info):
                 response = requests.get(url_asset,
                                         auth=HTTPBasicAuth(entry_info.step_login, entry_info.step_password),
                                         verify=False)
-                with open(fr"{SELECTED_PHOTOS}/{photo.name}.{PDF}", "wb") as plik:
-                    plik.write(response.content)
+                save_asset(photo, response)
             else:
                 photo.asset_data.save(f"SelectedPhotos/{photo.name}.{photo.asset_data.format}")
+
 
 def create_selected_photos_folder():
     if not os.path.exists(SELECTED_PHOTOS):
         os.makedirs(SELECTED_PHOTOS)
+
+
+def save_asset(photo, response):
+    with open(fr"{SELECTED_PHOTOS}/{photo.name}.{photo.extension}", "wb") as plik:
+        plik.write(response.content)

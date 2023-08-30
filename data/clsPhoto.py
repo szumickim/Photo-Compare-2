@@ -21,10 +21,12 @@ class Photo(PhotoBasics):
 
 
 class PhotoStep(PhotoBasics):
-    def __init__(self, asset_info, asset_name, asset_type):
+    def __init__(self, asset_name, asset_type, asset_data=None):
         super().__init__()
         self.name = asset_name
-        self.height = asset_info.height
-        self.width = asset_info.width
         self.asset_type = asset_type
-        self.asset_data = asset_info
+
+        if asset_data:
+            self.height = asset_data.height
+            self.width = asset_data.width
+            self.asset_data = asset_data
