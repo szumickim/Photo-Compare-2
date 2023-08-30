@@ -5,6 +5,7 @@ import tkinter as tk
 from PIL import Image
 import pymsgbox
 import shutil
+from tkinter import messagebox
 from entryInfo import EntryInfo
 from clsPhoto import Photo
 from clsProduct import Product
@@ -90,6 +91,10 @@ def main(entry_info: EntryInfo):
 
     if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
         download_module(products_collection, entry_info)
+
+    if entry_info.download_data_before_start:
+        if messagebox.askokcancel("Delete folder", "Do you want to delete folder with all asstes?"):
+            shutil.rmtree(f'{TEMP_ASSETS_FROM_STEP_FOLDER}')
 
 
 def gather_data_from_step_by_swagger(entry_info):

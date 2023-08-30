@@ -25,6 +25,10 @@ def create_product_collection_from_step(products_list, photo_reference_list, ent
     progres_bar = progressBar.ClsProgress(tk.Toplevel())
     progres_bar.add_counter()
     progres_bar.window_always_on_top()
+
+    if entry_info.download_data_before_start:
+        create_folder(TEMP_ASSETS_FROM_STEP_FOLDER)
+
     for index, photo_reference in enumerate(photo_reference_list):
         progres_bar.change_counter_label_text(f'{photo_reference} {index + 1}/{len(photo_reference_list)}')
         progres_bar.progress((int(index) + 1) / len(photo_reference_list) * 100)
@@ -76,7 +80,7 @@ def create_object_from_swagger(asset, product, photo_reference, entry_info):
         if entry_info.download_data_before_start:
             photo_object = PhotoStep(asset.get("target"), photo_reference)
             photo_object.extension = PDF if response.headers.get("Content-Type").find("pdf") >= 0 else 'jpg'
-            save_asset(photo_object, response)
+            save_asset(photo_object, response, TEMP_ASSETS_FROM_STEP_FOLDER)
         else:
             asset_data = get_asset_info(response)
             photo_object = PhotoStep(asset.get("target"), photo_reference, asset_data)
@@ -117,7 +121,7 @@ def get_assets(asset_id, entry_info):
 
 
 def download_selected(product, entry_info):
-    create_selected_photos_folder()
+    create_folder(SELECTED_PHOTOS)
     for photo in product.all_photos:
         if photo.selected_photo:
 
@@ -127,16 +131,16 @@ def download_selected(product, entry_info):
                 response = requests.get(url_asset,
                                         auth=HTTPBasicAuth(entry_info.step_login, entry_info.step_password),
                                         verify=False)
-                save_asset(photo, response)
+                save_asset(photo, response, SELECTED_PHOTOS)
             else:
                 photo.asset_data.save(f"SelectedPhotos/{photo.name}.{photo.asset_data.format}")
 
 
-def create_selected_photos_folder():
-    if not os.path.exists(SELECTED_PHOTOS):
-        os.makedirs(SELECTED_PHOTOS)
+def create_folder(folder_name):
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
 
 
-def save_asset(photo, response):
-    with open(fr"{SELECTED_PHOTOS}/{photo.name}.{photo.extension}", "wb") as plik:
+def save_asset(photo, response, folder_name):
+    with open(fr"{folder_name}/{photo.name}.{photo.extension}", "wb") as plik:
         plik.write(response.content)

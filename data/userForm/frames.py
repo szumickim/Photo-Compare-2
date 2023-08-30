@@ -30,7 +30,9 @@ def step_all_photos_window(user_form):
 
     _add_gather_data_type(user_form=user_form, master=border, row=7)
 
-    _add_menu(user_form=user_form, master=border, row=8)
+    _add_download_data(user_form=user_form, master=border, row=8)
+
+    _add_menu(user_form=user_form, master=border, row=9)
 
     border.pack(fill='both', expand=True)
 
@@ -73,6 +75,25 @@ def compare_window(user_form):
     _add_menu(user_form=user_form, master=border, row=3, back_to_menu=True)
 
     border.pack(fill='both', expand=True)
+
+
+def _add_download_data(user_form, master, row):
+    tk.Label(master, text="Download all assets before start: ").grid(row=row, column=0, sticky=tk.NSEW)
+    on_img = ImageTk.PhotoImage(Image.open('data/images/on.png'))
+    off_img = ImageTk.PhotoImage(Image.open('data/images/off.png'))
+
+    def _switch_on_off_button():
+        if user_form.entry_info.download_data_before_start:
+            button_on_off.config(image=off_img)
+            user_form.entry_info.download_data_before_start = False
+        else:
+            button_on_off.config(image=on_img)
+            user_form.entry_info.download_data_before_start = True
+
+    button_on_off = tk.Button(master, image=off_img,
+                              command=_switch_on_off_button, bd=0)
+
+    button_on_off.grid(row=row, column=1, sticky=tk.W)
 
 
 def _compare_checkbutons(user_form, master, row):
@@ -143,9 +164,8 @@ def _add_context(user_form, master, row):
     user_form.entry_info.assets_context.insert(0, "en-GL")
     user_form.entry_info.assets_context.grid(row=row, column=1, sticky=tk.W)
 
-
 def _add_gather_data_type(user_form, master, row):
-    tk.Label(master, text="Gather all images before start: ").grid(row=row, column=0, sticky=tk.NSEW)
+    tk.Label(master, text="Gather all assets before start: ").grid(row=row, column=0, sticky=tk.NSEW)
     on_img = ImageTk.PhotoImage(Image.open('data/images/on.png'))
     off_img = ImageTk.PhotoImage(Image.open('data/images/off.png'))
 
