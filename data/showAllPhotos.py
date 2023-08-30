@@ -62,6 +62,8 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
                 image = photo.asset_data
             elif entry_info.download_data_before_start:
                 image = get_image(photo)
+                photo.width = image.width
+                photo.height = image.height
             else:
                 image = Image.open(f"{photo_path}/{photo.name}")
             image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
