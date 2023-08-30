@@ -275,9 +275,9 @@ def add_scroll_bar(main_frame, my_canvas, second_frame):
 
 def get_image(photo):
     if photo.extension == PDF:
-        image = convert_from_path(f"{SELECTED_PHOTOS}/{photo.name}.{photo.extension}",
+        image = convert_from_path(f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{photo.name}.{photo.extension}",
                                   poppler_path=Path(POPPLER_PATH))[0]
     else:
         image = Image.open(
-            f"{SELECTED_PHOTOS}/{photo.name}.{photo.extension}")  # Image.open(f"{photo_path}/{photo.name}")
+            f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{photo.name}.{photo.extension}")  # Image.open(f"{photo_path}/{photo.name}")
     return image
