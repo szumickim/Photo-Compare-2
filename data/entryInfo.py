@@ -30,7 +30,7 @@ class EntryInfo:
     def change_button_variable_to_boolean(self):
         self.live_preview = self.live_preview.get()
         self.resize_photo = self.resize_photo.get()
-        self.continue_work = self.continue_work.get()
+        # self.continue_work = self.continue_work.get()
 
     def convert_elements_in_show_all(self):
         self.elements_on_screen = int(self.elements_on_screen.get())

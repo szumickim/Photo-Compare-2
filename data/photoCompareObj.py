@@ -5,7 +5,6 @@ import tkinter as tk
 from PIL import Image
 import pymsgbox
 import shutil
-from tkinter import messagebox
 from entryInfo import EntryInfo
 from clsPhoto import Photo
 from clsProduct import Product
@@ -70,7 +69,7 @@ def main(entry_info: EntryInfo):
             continue_program, button_action, i = show_all_images_loop(products_collection, entry_info, continue_program, i)
 
             if backup_counter % 100 == 0:
-                backup_excel(products_collection, entry_info.photo_path)
+                backup_excel(products_collection, entry_info)
 
         if button_action == int(ButtonConst.BACK):
             i -= entry_info.elements_on_screen

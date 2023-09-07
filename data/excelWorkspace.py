@@ -153,21 +153,22 @@ def work_with_show_all_summ_excel(products_collection, entry_info):
     to_modify = is_summary_excel_exists(excel_path)
 
     if to_modify:
-        modify_show_all_summ_excel(products_collection, excel_path)
+        modify_show_all_summ_excel(products_collection, excel_path, entry_info)
     else:
         create_show_all_summ_excel(products_collection, excel_path, entry_info)
 
 
 def is_summary_excel_exists(excel_path):
     if os.path.isfile(excel_path):
-        if messagebox.askokcancel("Summary excel",
-                                  "Summary excel exists! Do you want to add new values to existing file?"):
+        if messagebox.askyesno("Summary excel",
+                                  "Summary excel exists! Click 'YES' to add new values to existing file "
+                                  "or 'NO' to overwrite older excel."):
             return True
     return False
 
 
-def backup_excel(products_collection, folder_to_save, entry_info):
-    excel_path = f"{folder_to_save}/Backup{set_today_date('-')}.xlsx"
+def backup_excel(products_collection, entry_info):
+    excel_path = f"{entry_info.photo_path}/Backup{set_today_date('-')}.xlsx"
     create_show_all_summ_excel(products_collection, excel_path, entry_info)
 
 
@@ -197,7 +198,7 @@ def product_data_to_summary_excel(product, photo, entry_info):
         [product.product_id, photo.name, photo.asset_type, photo.height, photo.width]
 
 
-def modify_show_all_summ_excel(products_collection, excel_path):
+def modify_show_all_summ_excel(products_collection, excel_path, entry_info):
     workbook = load_workbook(filename=excel_path)
     sheet = workbook.active
 
@@ -209,8 +210,7 @@ def modify_show_all_summ_excel(products_collection, excel_path):
     for product in products_collection:
         for photo in product.all_photos:
             if photo.selected_photo:
-                for column, element in enumerate([product.product_id, photo.name, photo.asset_type,
-                                                  photo.height, photo.width], start=1):
+                for column, element in enumerate(product_data_to_summary_excel(product, photo, entry_info), start=1):
                     sheet.cell(row=counter, column=column).value = element
 
                 counter += 1
