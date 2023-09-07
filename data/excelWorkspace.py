@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 import os
 from consts import *
 import datetime
+from tkinter import messagebox
 
 LAST_COLUMN_IN_EXPORT: int = 40
 DIFFERENT: int = 2
@@ -138,10 +139,20 @@ def add_column_to_excel(excel_path, products_collection, first_row):
 def work_with_show_all_summ_excel(products_collection, entry_info):
     folder_to_save = entry_info.photo_path if len(entry_info.photo_path) > 0 else os.path.dirname(entry_info.excel_path)
     excel_path = f"{folder_to_save}/ShowAllSummary {set_today_date('-')}.xlsx"
-    if os.path.isfile(excel_path):
+
+    to_modify = is_summary_excel_exists(excel_path)
+
+    if to_modify:
         modify_show_all_summ_excel(products_collection, excel_path)
     else:
         create_show_all_summ_excel(products_collection, excel_path)
+
+
+def is_summary_excel_exists(excel_path):
+    if os.path.isfile(excel_path):
+        if messagebox.askokcancel("Summary excel", "Summary excel exists! Do you want to add new values to existing file?"):
+            return True
+    return False
 
 
 def backup_excel(products_collection, folder_to_save):
