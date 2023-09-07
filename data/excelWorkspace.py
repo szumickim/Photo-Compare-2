@@ -135,8 +135,9 @@ def add_column_to_excel(excel_path, products_collection, first_row):
     workbook.save(filename=excel_path)
 
 
-def work_with_show_all_summ_excel(products_collection, folder_to_save):
-    excel_path = f"ShowAllSummary {set_today_date('-')}.xlsx" if len(folder_to_save) == 0 else f"{folder_to_save}/ShowAllSummary {set_today_date('-')}.xlsx"
+def work_with_show_all_summ_excel(products_collection, entry_info):
+    folder_to_save = entry_info.photo_path if len(entry_info.photo_path) > 0 else os.path.dirname(entry_info.excel_path)
+    excel_path = f"{folder_to_save}/ShowAllSummary {set_today_date('-')}.xlsx"
     if os.path.isfile(excel_path):
         modify_show_all_summ_excel(products_collection, excel_path)
     else:

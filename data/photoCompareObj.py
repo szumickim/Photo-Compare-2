@@ -87,7 +87,8 @@ def main(entry_info: EntryInfo):
             shutil.rmtree(compare_photo_path)
 
     elif entry_info.program_type == ALL_IMAGES:
-        work_with_show_all_summ_excel(products_collection, entry_info.photo_path)
+
+        work_with_show_all_summ_excel(products_collection, entry_info)
         delete_backup(entry_info.photo_path)
 
     if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
