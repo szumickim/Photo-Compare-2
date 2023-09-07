@@ -123,12 +123,18 @@ class UserForm:
         if self.entry_info.data_from_step:
             self.entry_info.step_password = self.entry_info.step_password.get()
             self.entry_info.step_login = self.entry_info.step_login.get()
+            self.save_entry_data()
             self.entry_info.remove_unused_references_from_dict()
             self.entry_info.add_pim_id_list()
             self.entry_info.convert_context()
+
         self.open_menu()
         photoCompareObj.main(self.entry_info)
         tk.messagebox.showinfo(title="Photo Compare", message="Finished!")
+
+    def save_entry_data(self):
+        with open(CREDENTIALS_PATH, 'w') as f:
+            f.write(f"{self.entry_info.step_login};{self.entry_info.step_password}")
 
     def configue_borders(self, border, row_num, col_num):
         for i in range(row_num):
