@@ -59,13 +59,17 @@ class UserForm:
             references_list = csv.reader(f, delimiter=';')
             references_list = list(references_list)[0]
 
-
         references_label = tk.Label(master)
         for reference_name in references_list:
-            self.entry_info.references_dict[reference_name] = tk.BooleanVar()
+            if reference_name in self.entry_info.references_dict:
+                self.entry_info.references_dict[reference_name] = tk.BooleanVar(value=True) if self.entry_info.references_dict[reference_name] else tk.BooleanVar(value=False)
+            else:
+                self.entry_info.references_dict[reference_name] = tk.BooleanVar(value=False)
+
             tk.Checkbutton(references_label, text=reference_name,
                            variable= self.entry_info.references_dict[reference_name],
                            onvalue=True, offvalue=False, anchor='w').pack(fill='both')
+
         references_label.grid(row=0, column=0, sticky=tk.NSEW)
 
         options_label = tk.Label(master)
