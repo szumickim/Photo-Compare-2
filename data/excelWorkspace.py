@@ -168,7 +168,11 @@ def is_summary_excel_exists(excel_path):
 
 
 def backup_excel(products_collection, entry_info):
-    excel_path = f"{entry_info.photo_path}/Backup{set_today_date('-')}.xlsx"
+    folder_to_save = entry_info.photo_path if len(entry_info.photo_path) > 0 else os.path.dirname(entry_info.excel_path)
+
+    excel_path = f"{folder_to_save}/STEPShowAllSummary {set_today_date('-')}.xlsx" if entry_info.data_from_step \
+        else f"{folder_to_save}/ShowAllSummary {set_today_date('-')}.xlsx"
+
     create_show_all_summ_excel(products_collection, excel_path, entry_info)
 
 
