@@ -68,7 +68,7 @@ def main(entry_info: EntryInfo):
         elif entry_info.program_type == ALL_IMAGES:
             continue_program, button_action, i = show_all_images_loop(products_collection, entry_info, continue_program, i)
 
-            if backup_counter % 1 == 0:
+            if backup_counter % 50 == 0:
                 backup_excel(products_collection, entry_info)
 
         if button_action == int(ButtonConst.BACK):
