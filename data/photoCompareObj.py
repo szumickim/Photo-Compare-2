@@ -68,7 +68,7 @@ def main(entry_info: EntryInfo):
         elif entry_info.program_type == ALL_IMAGES:
             continue_program, button_action, i = show_all_images_loop(products_collection, entry_info, continue_program, i)
 
-            if backup_counter % 100 == 0:
+            if backup_counter % 50 == 0:
                 backup_excel(products_collection, entry_info)
 
         if button_action == int(ButtonConst.BACK):
@@ -88,7 +88,7 @@ def main(entry_info: EntryInfo):
     elif entry_info.program_type == ALL_IMAGES:
 
         work_with_show_all_summ_excel(products_collection, entry_info)
-        delete_backup(entry_info.photo_path)
+        delete_backup(entry_info)
 
     if entry_info.data_from_step and button_action == ButtonConst.DOWNLOAD:
         download_module(products_collection, entry_info)
@@ -98,8 +98,12 @@ def main(entry_info: EntryInfo):
             shutil.rmtree(f'{TEMP_ASSETS_FROM_STEP_FOLDER}')
 
 
-def delete_backup(folder_path):
-    backup_path = f"{folder_path}/Backup{set_today_date('-')}.xlsx"
+def delete_backup(entry_info):
+    folder_to_save = entry_info.photo_path if len(entry_info.photo_path) > 0 else os.path.dirname(entry_info.excel_path)
+
+    backup_path = f"{folder_to_save}/Backup{set_today_date('-')}.xlsx" if entry_info.data_from_step \
+        else f"{folder_to_save}/Backup{set_today_date('-')}.xlsx"
+
     if os.path.exists(backup_path):
         os.remove(backup_path)
 
