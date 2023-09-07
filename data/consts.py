@@ -16,6 +16,9 @@ class ShowAllConst(StrEnum):
     PHOTO_REFERENCE = 'Reference'
     HEIGHT = 'Image HEIGHT'
     WIDTH = 'Image WIDTH'
+    PRODUCT_IDS = 'Product IDS'
+    ASSET_ID = 'Asset ID'
+    PHOTO_REFERENCE_TYPE = 'Reference Types'
 
 
 class SummaryConst(StrEnum):

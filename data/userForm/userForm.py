@@ -59,23 +59,33 @@ class UserForm:
             references_list = csv.reader(f, delimiter=';')
             references_list = list(references_list)[0]
 
-
         references_label = tk.Label(master)
         for reference_name in references_list:
-            self.entry_info.references_dict[reference_name] = tk.BooleanVar()
+            if reference_name in self.entry_info.references_dict:
+                self.entry_info.references_dict[reference_name] = tk.BooleanVar(value=True) if self.entry_info.references_dict[reference_name] else tk.BooleanVar(value=False)
+            else:
+                self.entry_info.references_dict[reference_name] = tk.BooleanVar(value=False)
+
             tk.Checkbutton(references_label, text=reference_name,
                            variable= self.entry_info.references_dict[reference_name],
                            onvalue=True, offvalue=False, anchor='w').pack(fill='both')
+
         references_label.grid(row=0, column=0, sticky=tk.NSEW)
 
         options_label = tk.Label(master)
-        excel_label = tk.Button(options_label, text="Select",
-                                command=lambda: self.select_reference(master, step_references_label))
-        excel_label.pack(fill='both', expand=True)
 
-        excel_label = tk.Button(options_label, text="Exit",
+        select_reference_label = tk.Button(options_label, text="Select All",
+                                command=lambda: self.select_reference(master, step_references_label, select_all=True))
+        select_reference_label.pack(fill='both', expand=True)
+
+        select_reference_label = tk.Button(options_label, text="Select",
+                                command=lambda: self.select_reference(master, step_references_label))
+        select_reference_label.pack(fill='both', expand=True)
+
+        exit_label = tk.Button(options_label, text="Exit",
                                 command=lambda: master.destroy())
-        excel_label.pack(fill='both', expand=True)
+        exit_label.pack(fill='both', expand=True)
+
         options_label.grid(row=0, column=1, sticky=tk.NSEW)
 
     def menu_label(self, menu_frame, back_to_menu=True):
@@ -95,11 +105,13 @@ class UserForm:
                                                                                       expand=True,
                                                                                       side=tk.LEFT)
 
-    def select_reference(self, master, step_references_label):
+    def select_reference(self, master, step_references_label, select_all=False):
         step_references_label.configure(background="lightgreen", text="Selected")
 
         for k, v in self.entry_info.references_dict.items():
-            if isinstance(v, tk.BooleanVar):
+            if select_all:
+                self.entry_info.references_dict[k] = True
+            elif isinstance(v, tk.BooleanVar):
                 self.entry_info.references_dict[k] = v.get()
         master.destroy()
 
@@ -123,12 +135,18 @@ class UserForm:
         if self.entry_info.data_from_step:
             self.entry_info.step_password = self.entry_info.step_password.get()
             self.entry_info.step_login = self.entry_info.step_login.get()
+            self.save_entry_data()
             self.entry_info.remove_unused_references_from_dict()
             self.entry_info.add_pim_id_list()
             self.entry_info.convert_context()
+
         self.open_menu()
         photoCompareObj.main(self.entry_info)
         tk.messagebox.showinfo(title="Photo Compare", message="Finished!")
+
+    def save_entry_data(self):
+        with open(CREDENTIALS_PATH, 'w') as f:
+            f.write(f"{self.entry_info.step_login};{self.entry_info.step_password}")
 
     def configue_borders(self, border, row_num, col_num):
         for i in range(row_num):

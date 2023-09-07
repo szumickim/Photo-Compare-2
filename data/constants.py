@@ -21,6 +21,8 @@ SHOW_ALL_SUMMARY_FORMAT: int = 1
 SUMMARY_FORMAT: int = 2
 
 POPPLER_PATH = r"C:\poppler-23.05.0\Library\bin"
+CREDENTIALS_PATH = 'data/userForm/login.txt'
+
 
 TAG_TO_DELETE_KEY: str = 'To delete'
 BME_CAT_DICT_KEY: str = 'BME_CAT'

@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
@@ -117,14 +118,32 @@ def _compare_checkbutons(user_form, master, row):
 
 
 def _add_credentials(user_form, master, first_row):
+
+    def get_saved_login():
+        # load the text before startup
+        login_path = CREDENTIALS_PATH
+        if os.path.isfile(login_path):
+            with open(login_path, 'r') as f:
+                data = f.read().split(";")
+                username = data[0]
+                password = data[1]
+        else:
+            password = ""
+            username = ""
+        return password, username
+
+    password, login = get_saved_login()
+
     login_label = tk.Label(master, text="Login", relief="groove")
     login_label.grid(row=first_row, column=0, sticky=tk.NSEW, ipadx=user_form.buttons_width)
     user_form.entry_info.step_login = tk.Entry(master)
+    user_form.entry_info.step_login.insert(tk.END, login)
     user_form.entry_info.step_login.grid(row=first_row, column=1, columnspan=3, sticky=tk.NSEW)
 
     password_label = tk.Label(master, text="Password", relief="groove")
     password_label.grid(row=first_row + 1, column=0, sticky=tk.NSEW, ipadx=user_form.buttons_width)
     user_form.entry_info.step_password = tk.Entry(master, show="*")
+    user_form.entry_info.step_password.insert(tk.END, password)
     user_form.entry_info.step_password.grid(row=first_row + 1, column=1, columnspan=3, sticky=tk.NSEW)
 
 
