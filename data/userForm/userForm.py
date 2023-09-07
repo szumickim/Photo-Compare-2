@@ -73,13 +73,19 @@ class UserForm:
         references_label.grid(row=0, column=0, sticky=tk.NSEW)
 
         options_label = tk.Label(master)
-        excel_label = tk.Button(options_label, text="Select",
-                                command=lambda: self.select_reference(master, step_references_label))
-        excel_label.pack(fill='both', expand=True)
 
-        excel_label = tk.Button(options_label, text="Exit",
+        select_reference_label = tk.Button(options_label, text="Select All",
+                                command=lambda: self.select_reference(master, step_references_label, select_all=True))
+        select_reference_label.pack(fill='both', expand=True)
+
+        select_reference_label = tk.Button(options_label, text="Select",
+                                command=lambda: self.select_reference(master, step_references_label))
+        select_reference_label.pack(fill='both', expand=True)
+
+        exit_label = tk.Button(options_label, text="Exit",
                                 command=lambda: master.destroy())
-        excel_label.pack(fill='both', expand=True)
+        exit_label.pack(fill='both', expand=True)
+
         options_label.grid(row=0, column=1, sticky=tk.NSEW)
 
     def menu_label(self, menu_frame, back_to_menu=True):
@@ -99,11 +105,13 @@ class UserForm:
                                                                                       expand=True,
                                                                                       side=tk.LEFT)
 
-    def select_reference(self, master, step_references_label):
+    def select_reference(self, master, step_references_label, select_all=False):
         step_references_label.configure(background="lightgreen", text="Selected")
 
         for k, v in self.entry_info.references_dict.items():
-            if isinstance(v, tk.BooleanVar):
+            if select_all:
+                self.entry_info.references_dict[k] = True
+            elif isinstance(v, tk.BooleanVar):
                 self.entry_info.references_dict[k] = v.get()
         master.destroy()
 
