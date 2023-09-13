@@ -78,7 +78,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
 
         for i, photo in enumerate(product.all_photos):
 
-            dict_key = f"{product.product_id};{photo.name}"
+            dict_key = f"{product.product_id};{photo.name};{photo.asset_type}"
 
             # tk.Label(second_frame, image=image_list[i + counter]).grid(row=y_position + 1, column=x_position, pady=1, padx=10)
 
@@ -142,7 +142,7 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
 
         for product in products_list:
             for photo in product.all_photos:
-                checkbnt = photos_names_dict.get(f"{product.product_id};{photo.name}")
+                checkbnt = photos_names_dict.get(f"{product.product_id};{photo.name};{photo.asset_type}")
                 if checkbnt.var.get():
                     photo.selected_photo = True
                     print('Item selected: {}'.format(checkbnt['text']))
