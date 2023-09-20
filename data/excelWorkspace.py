@@ -178,7 +178,7 @@ def backup_excel(products_collection, entry_info):
 
 def get_all_summary_columns(entry_info):
     if entry_info.data_from_step:
-        return [ShowAllConst.PRODUCT_IDS, ShowAllConst.ASSET_ID, ShowAllConst.PHOTO_REFERENCE_TYPE]
+        return [ShowAllConst.ASSET_ID, ShowAllConst.PRODUCT_IDS, ShowAllConst.PHOTO_REFERENCE_TYPE]
     else:
         return [ShowAllConst.PRODUCT_ID, ShowAllConst.PHOTO_ID, ShowAllConst.PHOTO_REFERENCE,
                 ShowAllConst.HEIGHT, ShowAllConst.WIDTH]
