@@ -1,0 +1,14 @@
+
+**** Trace file opened at 2023-09-26 15:39:32.971116 UTC+02:00 (rodkowoeuropejski czas stand.), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 15:06:49
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: C:\Users\szumimic\Desktop\Python_scripts\Photo Compare 2, Program: python
+ Hardware: PC with Windows NT 8x AMD64 Level 6 (Mod 142 Step 12), Operating_system: Windows NT 10.0
+ Hostname: PLONNLO1B5FBC, IP address: 169.254.44.24, IPv6 address: fe80::1b10:307b:aea2:a93
+
+2023-09-26 15:39:32.995764 [09068] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+2023-09-26 15:39:33.659590 [09068] >> Error entry
+	[Handle: 2906969480416	ConvID: 81032516	SysID: 	SysNr: 17	Target: onndiep117	User: 	Mandant: 100	Language: 	Codepage: 4103]
+	RfcABAPMessageException: Key: , Code: RFC_ABAP_MESSAGE, Message: 00024error during logon
