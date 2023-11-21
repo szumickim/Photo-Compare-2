@@ -96,7 +96,7 @@ def create_object_from_swagger(asset, product, photo_reference, entry_info):
         product.all_photos.append(photo_object)
     except Exception as e:
         print(f'Response error: {e}')
-#
+
 
 def is_asset_already_downloaded(asset_name, entry_info):
     if not entry_info.download_data_before_start:
