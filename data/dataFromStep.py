@@ -16,8 +16,6 @@ from pathlib import Path
 from constants import *
 
 warnings.filterwarnings('ignore')
-LOGIN = 'SZUMIMIC'
-PASSWORD = 'step23'
 FIND_ID_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/products'  # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
 GET_ASSETS_URL = 'https://steppimprod001.ku.k-netti.com/restapiv2/assets'  # /PIM21310811/references/Product%20Image%20further?context=en-GL&workspace=Main
 
