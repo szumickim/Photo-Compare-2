@@ -16,6 +16,7 @@ class EntryInfo:
         self.pim_id_list: list = []
         self.gather_data_before_start: bool = True
         self.download_data_before_start: bool = False
+        self.schneider_project: bool = False
         self.assets_context: str = "en-GL"
 
         self.step_login = ''

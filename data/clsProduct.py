@@ -39,3 +39,8 @@ class ProductStep(ProductBasics):
         self.all_photos: list = []
         self.product_id = pim_id
 
+class ProductSchneider(ProductBasics):
+    def __init__(self, pim_id, photos_list):
+        super().__init__()
+        self.all_photos: list = photos_list
+        self.product_id = pim_id

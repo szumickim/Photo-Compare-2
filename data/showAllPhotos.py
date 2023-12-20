@@ -64,8 +64,13 @@ def show_all_photos(products_list, photo_path, progress_counter: dict, entry_inf
                 image = get_image(photo)
                 photo.width = image.width
                 photo.height = image.height
+            elif entry_info.schneider_project:
+                image = get_schneider_image(photo, entry_info)
+                photo.width = image.width
+                photo.height = image.height
             else:
                 image = Image.open(f"{photo_path}/{photo.name}")
+
             image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
             my_img = ImageTk.PhotoImage(image)
             image_list.append(my_img)
@@ -282,4 +287,17 @@ def get_image(photo):
     else:
         image = Image.open(
             f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{photo.name}.{photo.extension}")  # Image.open(f"{photo_path}/{photo.name}")
+    return image
+
+
+def get_schneider_image(photo, entry_info):
+    if photo.name.find(PDF) >= 0:
+        # image = convert_from_path(f"{entry_info.photo_path}/{photo.name}",
+        #                           poppler_path=Path(POPPLER_PATH))[0]
+        image = Image.open(
+            fr"C:\Users\szumimic\Desktop\Python_scripts\Photo Compare 2\data\images\pdf_stock.jpg")
+
+    else:
+        image = Image.open(
+            f"{entry_info.photo_path}/{photo.name}")  # Image.open(f"{photo_path}/{photo.name}")
     return image

@@ -45,7 +45,7 @@ def local_all_photos_window(user_form):
     user_form.clear_frame(user_form.root)
     border = ttk.LabelFrame(user_form.root, border=0, width=user_form.screen_width, height=user_form.screen_height)
 
-    user_form.configue_borders(border, 3, 3)
+    user_form.configue_borders(border, 4, 3)
 
     _add_folder_with_photos(user_form=user_form, master=border, row=0)
 
@@ -53,7 +53,9 @@ def local_all_photos_window(user_form):
 
     _add_number_of_elements(user_form=user_form, master=border, row=2)
 
-    _add_menu(user_form=user_form, master=border, row=3)
+    _add_schneider_option(user_form=user_form, master=border, row=3)
+
+    _add_menu(user_form=user_form, master=border, row=4)
 
     border.pack(fill='both', expand=True)
 
@@ -90,6 +92,25 @@ def _add_download_data(user_form, master, row):
         else:
             button_on_off.config(image=on_img)
             user_form.entry_info.download_data_before_start = True
+
+    button_on_off = tk.Button(master, image=off_img,
+                              command=_switch_on_off_button, bd=0)
+
+    button_on_off.grid(row=row, column=1, sticky=tk.W)
+
+
+def _add_schneider_option(user_form, master, row):
+    tk.Label(master, text="Schneider project: ").grid(row=row, column=0, sticky=tk.NSEW)
+    on_img = ImageTk.PhotoImage(Image.open('data/images/on.png'))
+    off_img = ImageTk.PhotoImage(Image.open('data/images/off.png'))
+
+    def _switch_on_off_button():
+        if user_form.entry_info.schneider_project:
+            button_on_off.config(image=off_img)
+            user_form.entry_info.schneider_project = False
+        else:
+            button_on_off.config(image=on_img)
+            user_form.entry_info.schneider_project = True
 
     button_on_off = tk.Button(master, image=off_img,
                               command=_switch_on_off_button, bd=0)

@@ -11,6 +11,7 @@ class PhotoBasics:
         self.worse = False
         self.extension: str
 
+
 class Photo(PhotoBasics):
     def __init__(self, name, photo_height, photo_width, asset_type):
         super().__init__()
@@ -30,3 +31,9 @@ class PhotoStep(PhotoBasics):
             self.height = asset_data.height
             self.width = asset_data.width
             self.asset_data = asset_data
+
+class PhotoSchneider(PhotoBasics):
+    def __init__(self, asset_name, asset_type):
+        super().__init__()
+        self.name = asset_name
+        self.asset_type = asset_type

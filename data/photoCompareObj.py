@@ -1,13 +1,14 @@
 import itertools
 import cv2
+import pandas as pd
 from skimage.metrics import structural_similarity as ssim
 import tkinter as tk
 from PIL import Image
 import pymsgbox
 import shutil
 from entryInfo import EntryInfo
-from clsPhoto import Photo
-from clsProduct import Product
+from clsPhoto import Photo, PhotoSchneider
+from clsProduct import Product, ProductSchneider
 from clsPhotosPair import PhotosPair
 from showAllPhotos import show_all_photos
 from showCompareImages import show_image
@@ -18,14 +19,10 @@ from dataFromStep import download_selected
 import progressBar
 from constants import *
 
-def main(entry_info: EntryInfo):
 
-    # tworzenie list obiektów 'ClsProduct'
-    if entry_info.data_from_step or entry_info.download_data_before_start:
-        products_collection = gather_data_from_step_by_swagger(entry_info)
-        first_row = 0
-    else:
-        products_collection, first_row = create_products_collection(entry_info)
+def main(entry_info: EntryInfo):
+    # tworzenie listy z obiektami klasy 'ClsProduct'
+    products_collection, first_row = create_products_collection(entry_info)
 
     # Inicjowanie progressBaru
     if entry_info.program_type == COMPARE:
@@ -96,6 +93,41 @@ def main(entry_info: EntryInfo):
     if entry_info.download_data_before_start:
         if messagebox.askokcancel("Delete folder", "Do you want to delete folder with all asstes?"):
             shutil.rmtree(f'{TEMP_ASSETS_FROM_STEP_FOLDER}')
+
+
+def create_products_collection_for_schneider_project(entry_info):
+    df_products_and_photos = pd.read_excel(entry_info.excel_path)
+    df_products_and_photos = df_products_and_photos[df_products_and_photos['Is downloaded'] == True]
+    df_products_and_photos = df_products_and_photos.groupby('PIM ID').agg(lambda x: ';'.join(map(str, x))).reset_index()
+
+    products_collection = []
+
+    for index, row in df_products_and_photos.iterrows():
+        photos_list = create_schneider_photo_list(row["Photo name"], row["Photo ref"])
+        products_collection.append(ProductSchneider(row["PIM ID"], photos_list))
+    return products_collection
+
+def create_schneider_photo_list(name: str, asset_type: str):
+
+    zip_list = zip(str(name).split(";"), str(asset_type).split(";"))
+    obj_list = []
+    for single_name, single_asset_type in zip_list:
+        # single_name = f'{single_name}.jpg' if single_name.find(".jpg") == -1 else single_name
+        obj_list.append(PhotoSchneider(single_name, single_asset_type))
+    return obj_list
+
+
+def create_products_collection(entry_info: EntryInfo):
+    # tworzenie listy z obiektami klasy 'ClsProduct'
+    if entry_info.data_from_step or entry_info.download_data_before_start:
+        products_collection = gather_data_from_step_by_swagger(entry_info)
+        first_row = 0
+    elif entry_info.schneider_project:
+        products_collection = create_products_collection_for_schneider_project(entry_info)
+        first_row = 0
+    else:
+        products_collection, first_row = create_products_collection_local(entry_info)
+    return products_collection, first_row
 
 
 def delete_backup(entry_info):
@@ -173,7 +205,7 @@ def get_columns_length(df_export) -> int:
         return len(df_export.columns)
 
 
-def create_products_collection(entry_info):
+def create_products_collection_local(entry_info):
     # Wczytywanie excela z informacjami o zdjęciach
     df_export, first_row = read_export(entry_info)
 
