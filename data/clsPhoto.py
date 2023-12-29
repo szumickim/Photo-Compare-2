@@ -7,7 +7,7 @@ class PhotoBasics:
         self.similar_photo = None
         self.photo_array = None
         self.selected_photo = False
-        self.validated = False
+        self.validated = False  # Czy zdjęcie zostało wykryte jako duplikat w procesie COMPARE
         self.worse = False
         self.extension: str
 
@@ -27,10 +27,11 @@ class PhotoStep(PhotoBasics):
         self.name = asset_name
         self.asset_type = asset_type
 
-        if asset_data:
+        if asset_data:  # Jeżeli zdjęcia są przechowywane bezpośrednio w RAM
             self.height = asset_data.height
             self.width = asset_data.width
             self.asset_data = asset_data
+
 
 class PhotoSchneider(PhotoBasics):
     def __init__(self, asset_name, asset_type):

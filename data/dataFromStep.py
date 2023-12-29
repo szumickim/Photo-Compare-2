@@ -89,7 +89,7 @@ def create_object_from_swagger(asset, product, photo_reference, entry_info):
         else:
             asset_data = get_asset_info(response)
             photo_object = PhotoStep(asset.get("target"), photo_reference, asset_data)
-            photo_object.extension = PDF if response.headers.get("Content-Type").find("pdf") >= 0 else 'jpg'
+            photo_object.extension = PDF if response.headers.get("Content-Type").find("pdf") >= 0 or response.headers.get("Content-Type").find('application/illustrator') >=0 else 'jpg'
 
         product.all_photos.append(photo_object)
     except Exception as e:
@@ -116,7 +116,7 @@ def get_asset_data(assets_dict, product, photo_reference, entry_info):
 def get_asset_info(response):
     if response.headers.get("Content-Type").find("image") >= 0:
         return Image.open(io.BytesIO(response.content))
-    elif response.headers.get("Content-Type").find("pdf") >= 0 or response.headers.get("Content-Type").find("ai") >= 0:
+    elif response.headers.get("Content-Type").find("pdf") >= 0 or response.headers.get("Content-Type").find('application/illustrator') >= 0:
         return convert_from_bytes(response.content, poppler_path=Path(POPPLER_PATH))[0]
 
 

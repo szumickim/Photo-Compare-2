@@ -60,8 +60,8 @@ def main(entry_info: EntryInfo):
             continue_program, button_action = compare_images_loop(product, entry_info, continue_program, button_action, compare_photo_path)
 
             progres_bar.progress(int(i - first_row) / (len(products_collection) - first_row) * 100)
-            progres_bar.change_counter_label_text(f'{int(i - first_row)}/{len(products_collection) - first_row}')
 
+            progres_bar.change_counter_label_text(f'{int(i - first_row)}/{len(products_collection) - first_row}')
         elif entry_info.program_type == ALL_IMAGES:
             continue_program, button_action, i = show_all_images_loop(products_collection, entry_info, continue_program, i)
 
@@ -81,9 +81,7 @@ def main(entry_info: EntryInfo):
         # Usuwanie tymczasowych, rozszerzonych zdjęć
         if entry_info.resize_photo:
             shutil.rmtree(compare_photo_path)
-
     elif entry_info.program_type == ALL_IMAGES:
-
         work_with_show_all_summ_excel(products_collection, entry_info)
         delete_backup(entry_info)
 
@@ -107,8 +105,8 @@ def create_products_collection_for_schneider_project(entry_info):
         products_collection.append(ProductSchneider(row["PIM ID"], photos_list))
     return products_collection
 
-def create_schneider_photo_list(name: str, asset_type: str):
 
+def create_schneider_photo_list(name: str, asset_type: str):
     zip_list = zip(str(name).split(";"), str(asset_type).split(";"))
     obj_list = []
     for single_name, single_asset_type in zip_list:
@@ -139,6 +137,7 @@ def delete_backup(entry_info):
     if os.path.exists(backup_path):
         os.remove(backup_path)
 
+
 def gather_data_from_step_by_swagger(entry_info):
     photo_reference_list = list(entry_info.references_dict.keys())
     products_collection = create_products_objects(entry_info.pim_id_list)
@@ -156,7 +155,7 @@ def download_module(products_collection, entry_info):
 def show_all_images_loop(products_collection: list, entry_info: EntryInfo, continue_program, i):
     progress_counter = {"first": i, "current": i + entry_info.elements_on_screen, "all": len(products_collection)}
 
-    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], entry_info.photo_path, progress_counter, entry_info)
+    button_action, next_product_id = show_all_photos(products_collection[i:i + entry_info.elements_on_screen], progress_counter, entry_info)
     if button_action in [int(ButtonConst.CLOSE), int(ButtonConst.DOWNLOAD)]:
         continue_program = False
     elif button_action == int(ButtonConst.GO_TO):
