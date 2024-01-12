@@ -102,6 +102,7 @@ def show_all_photos(products_list, progress_counter: dict, entry_info):
             photos_names_dict[dict_key].grid(row=y_position + 4, column=x_position, pady=10, padx=10)
 
             changer_reference = RefChanger()
+
             def change_reference_button_action(label):
                 label.config(text=changer_reference.text)
 
@@ -330,16 +331,21 @@ def get_image(photo):
 
 
 def get_schneider_image(photo, entry_info):
-
-    if photo.name.find(PDF) >= 0:
-        doc = fitz.open(f"{entry_info.photo_path}/{photo.name}")
-        for page in doc:
-            pix = page.get_pixmap()
-            image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-            break
-    else:
-        image = Image.open(
-            f"{entry_info.photo_path}/{photo.name}")  # Image.open(f"{photo_path}/{photo.name}")
+    image = None
+    try:
+        if photo.name.find(PDF) >= 0:
+            doc = fitz.open(f"{entry_info.photo_path}/{photo.name}")
+            for page in doc:
+                pix = page.get_pixmap()
+                image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                break
+        else:
+            image = Image.open(
+                f"{entry_info.photo_path}/{photo.name}")  # Image.open(f"{photo_path}/{photo.name}")
+    except Exception as e:
+        pass
+    if not image:
+        image = Image.open(f"data/images/no_file.jpg")  # Image.open(f"{photo_path}/{photo.name}")
     return image
 
 
