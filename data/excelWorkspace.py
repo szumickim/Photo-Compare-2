@@ -144,11 +144,18 @@ def add_column_to_excel(excel_path, products_collection, first_row):
     workbook.save(filename=excel_path)
 
 
+def get_excel_path(entry_info, folder_to_save):
+    if entry_info.data_from_step:
+        return f"{folder_to_save}/STEPShowAllSummary {set_today_date('-')}.xlsx"
+    elif entry_info.schneider_project:
+        return f"{folder_to_save}/SchneiderAllSummary {set_today_date('-')}.xlsx"
+    else:
+        return f"{folder_to_save}/ShowAllSummary {set_today_date('-')}.xlsx"
+
+
 def work_with_show_all_summ_excel(products_collection, entry_info):
     folder_to_save = entry_info.photo_path if len(entry_info.photo_path) > 0 else os.path.dirname(entry_info.excel_path)
-
-    excel_path = f"{folder_to_save}/STEPShowAllSummary {set_today_date('-')}.xlsx" if entry_info.data_from_step \
-        else f"{folder_to_save}/ShowAllSummary {set_today_date('-')}.xlsx"
+    excel_path = get_excel_path(entry_info, folder_to_save)
 
     to_modify = is_summary_excel_exists(excel_path)
 
@@ -179,6 +186,8 @@ def backup_excel(products_collection, entry_info):
 def get_all_summary_columns(entry_info):
     if entry_info.data_from_step:
         return [ShowAllConst.ASSET_ID, ShowAllConst.PRODUCT_IDS, ShowAllConst.PHOTO_REFERENCE_TYPE]
+    elif entry_info.schneider_project:
+        return [ShowAllConst.ASSET_ID, ShowAllConst.PRODUCT_IDS, ShowAllConst.PHOTO_REFERENCE_TYPE, ShowAllConst.IS_SELECTED]
     else:
         return [ShowAllConst.PRODUCT_ID, ShowAllConst.PHOTO_ID, ShowAllConst.PHOTO_REFERENCE,
                 ShowAllConst.HEIGHT, ShowAllConst.WIDTH]
@@ -191,15 +200,19 @@ def create_show_all_summ_excel(products_collection, excel_path, entry_info):
 
     for product in products_collection:
         for photo in product.all_photos:
-            if photo.selected_photo:
+            if photo.selected_photo or entry_info.schneider_project:
                 df_show_all_summ.loc[df_show_all_summ.shape[0]] = product_data_to_summary_excel(product, photo, entry_info)
 
     df_show_all_summ.to_excel(excel_path, index=False)
 
 
 def product_data_to_summary_excel(product, photo, entry_info):
-    return [photo.name, product.product_id, photo.asset_type] if entry_info.data_from_step else \
-        [product.product_id, photo.name, photo.asset_type, photo.height, photo.width]
+    if entry_info.data_from_step:
+        return [photo.name, product.product_id, photo.asset_type]
+    elif entry_info.schneider_project:
+        return [photo.name, product.product_id, photo.asset_type, photo.selected_photo]
+    else:
+        return [product.product_id, photo.name, photo.asset_type, photo.height, photo.width]
 
 
 def modify_show_all_summ_excel(products_collection, excel_path, entry_info):
@@ -213,7 +226,7 @@ def modify_show_all_summ_excel(products_collection, excel_path, entry_info):
     counter = i
     for product in products_collection:
         for photo in product.all_photos:
-            if photo.selected_photo:
+            if photo.selected_photo or entry_info.schneider_project:
                 for column, element in enumerate(product_data_to_summary_excel(product, photo, entry_info), start=1):
                     sheet.cell(row=counter, column=column).value = element
 

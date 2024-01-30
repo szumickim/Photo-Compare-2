@@ -19,6 +19,7 @@ class ShowAllConst(StrEnum):
     PRODUCT_IDS = 'Product IDS'
     ASSET_ID = 'Asset ID'
     PHOTO_REFERENCE_TYPE = 'Reference Types'
+    IS_SELECTED = 'Selected'
 
 
 class SummaryConst(StrEnum):
