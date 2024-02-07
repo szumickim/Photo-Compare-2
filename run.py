@@ -6,4 +6,3 @@ sys.path.append("./data/userForm")
 
 if __name__ == "__main__":
     userForm.run()
-    print("Dupa")
