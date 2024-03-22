@@ -6,8 +6,8 @@ from progressBar import ClsProgress
 from tkinter import messagebox
 from dataFromStep import create_product_collection_from_step
 from constants import *
-from pdf2image import convert_from_path
-from pathlib import Path
+# from pdf2image import convert_from_path
+# from pathlib import Path
 import fitz  # PyMuPDF
 import csv
 global next_product_id
@@ -61,7 +61,13 @@ def show_all_photos(products_list, progress_counter: dict, entry_info):
 
         for photo in product.all_photos:
             image = get_image_of_photo(photo, entry_info)
-            image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
+            try:
+                image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
+            except Exception as ex:
+                image = Image.open(f"data/images/no_file.jpg")
+                image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
+                print(str(ex))
+
             my_img = ImageTk.PhotoImage(image)
             image_list.append(my_img)
 
@@ -322,8 +328,14 @@ def add_scroll_bar(main_frame, my_canvas, second_frame):
 
 def get_image(photo):
     if photo.extension == PDF:
-        image = convert_from_path(f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{photo.name}.{photo.extension}",
-                                  poppler_path=Path(POPPLER_PATH))[0]
+        # image = convert_from_path(f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{photo.name}.{photo.extension}",
+        #                           poppler_path=Path(POPPLER_PATH))[0]
+        image = None
+        doc = fitz.open(f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{photo.name}.{photo.extension}")
+        for page in doc:
+            pix = page.get_pixmap()
+            image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            break
     else:
         image = Image.open(
             f"{TEMP_ASSETS_FROM_STEP_FOLDER}/{photo.name}.{photo.extension}")  # Image.open(f"{photo_path}/{photo.name}")

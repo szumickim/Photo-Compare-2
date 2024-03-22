@@ -1,6 +1,9 @@
 import itertools
 import cv2
-import pandas as pd
+import sys
+sys.path.append("./data/")
+
+# import pandas as pd
 from skimage.metrics import structural_similarity as ssim
 import tkinter as tk
 from PIL import Image
@@ -213,7 +216,7 @@ def create_products_collection_local(entry_info):
     columns_length = get_columns_length(df_export)
 
     for j in range(1, columns_length, 3):
-        temp_df = df_export.iloc[:, j:3+j]
+        temp_df = df_export.iloc[:, j:3 + j]
         temp_df.columns = ["name", "photo_height", "photo_width"]
         photos_list = [create_obj_list(row.get("name"), row.get("photo_height"),
                                        row.get("photo_width"), df_export.columns[j]) if str(row.get("name")).lower() != "nan" else "" for row in temp_df.to_dict(orient='records')]
@@ -257,7 +260,6 @@ def add_validated_products_to_collection(products_collection, entry_info: EntryI
 
 
 def resize_photos(photo_path):
-
     resize_progress = progressBar.ClsProgress(tk.Toplevel())
     temp_folder_dir = f"{photo_path}/temp"
     os.mkdir(temp_folder_dir)
@@ -268,7 +270,7 @@ def resize_photos(photo_path):
             new_image = image.resize((200, 200))
             new_image.save(f"{temp_folder_dir}/{filename}")
 
-        resize_progress.progress(counter/len(os.listdir(photo_path))*100)
+        resize_progress.progress(counter / len(os.listdir(photo_path)) * 100)
 
         counter += 1
 
@@ -299,7 +301,6 @@ def read_export(entry_info):
 
 
 def create_obj_list(name: str, height: str, width: str, asset_type):
-
     zip_list = zip(str(name).split(";"), str(height).split(";"), str(width).split(";"))
     obj_list = []
     for single_name, single_height, single_width in zip_list:
@@ -309,7 +310,6 @@ def create_obj_list(name: str, height: str, width: str, asset_type):
 
 
 def compare_images(imageA: Photo, imageB: Photo, product: Product, photo_folder_path: str, live_preview):
-
     # ustawianie domyślnych wartości
     button_action = int(ButtonConst.NEXT)
     continue_program = True

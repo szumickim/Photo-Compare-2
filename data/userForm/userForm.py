@@ -1,6 +1,8 @@
 from tkinter.filedialog import askopenfilename
 from tkinter.filedialog import askdirectory
 import csv
+import sys
+sys.path.append("./data/userForm")
 
 import data.photoCompareObj as photoCompareObj
 from frames import *

@@ -195,7 +195,6 @@ def _add_pdfs_references(user_form, master, row):
 def _add_number_of_elements(user_form, master, row):
     tk.Label(master, text="Number of elements in show all: ").grid(row=row, column=0, sticky=tk.NSEW)
     user_form.entry_info.elements_on_screen = tk.Entry(master, width=2, justify='center')
-    user_form.entry_info.elements_on_screen.insert(0, "3")
     user_form.entry_info.elements_on_screen.grid(row=row, column=1, sticky=tk.W)
 
 def _add_context(user_form, master, row):
